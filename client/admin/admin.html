@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Dressify AI</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+  <style>
+    body{font-family:Segoe UI, Tahoma, Geneva, Verdana,sans-serif;background:#f4f6fb;color:#222;padding:40px}
+    .container{max-width:900px;margin:0 auto;background:#fff;padding:24px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    h1{margin:0 0 12px}
+    .meta{color:#555;margin-bottom:18px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:6px;background:#667eea;color:#fff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <p class="meta">Welcome, admin. This page is protected—only users with admin privileges may access it.</p>
+    <div id="info"></div>
+    <hr style="margin:18px 0">
+    <section>
+      <h2 style="margin-top:0">Quick Links</h2>
+      <div style="margin:15px 0">
+        <a href="admin-orders.html" class="btn" style="background:#667eea;margin-right:10px">📦 Manage Orders</a>
+        <a href="add-product.html" class="btn" style="background:#28a745;margin-right:10px">➕ Add Product</a>
+      </div>
+    </section>
+    <hr style="margin:18px 0">
+    <section>
+      <h2 style="margin-top:0">Recent Orders</h2>
+      <div id="orders" style="margin-top:12px">Loading orders...</div>
+    </section>
+    <p style="margin-top:18px">
+      <a href="#" id="logoutBtn" class="btn">Logout</a>
+      <a href="../index.html" id="viewSite" class="btn" style="background:#333;margin-left:8px">View Site</a>
+    </p>
+  </div>
+
+  <script src="../js/auth-utils.js"></script>
+  <script>
+    // Ensure only admins can access
+    (async function() {
+      const token = getAuthToken();
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const valid = await verifyAuthToken();
+      if (!valid) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const user = getCurrentUser();
+      if (!user || !user.isAdmin) {
+        // Not an admin — send to regular home
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // Populate admin info
+      const info = document.getElementById('info');
+      info.innerHTML = `<strong>Signed in as:</strong> ${user.fullname} &lt;${user.email}&gt;`;
+
+      // Load orders and render
+      async function loadOrders() {
+        const container = document.getElementById('orders');
+        container.innerHTML = 'Loading orders...';
+        try {
+          const res = await fetch(`${API_BASE_URL}/orders`, { headers: getAuthHeader() });
+          if (!res.ok) throw new Error('Failed to fetch orders');
+          const data = await res.json();
+          if (!data.orders || data.orders.length === 0) {
+            container.innerHTML = '<em>No orders found</em>';
+            return;
+          }
+
+          const list = document.createElement('div');
+          list.style.display = 'grid';
+          list.style.gridTemplateColumns = '1fr';
+          list.style.gap = '12px';
+
+          data.orders.forEach(order => {
+            const card = document.createElement('div');
+            card.style.border = '1px solid #e6e9ef';
+            card.style.padding = '12px';
+            card.style.borderRadius = '8px';
+
+            const header = document.createElement('div');
+            header.innerHTML = `<strong>Order:</strong> ${order._id} &nbsp; <small>${new Date(order.createdAt).toLocaleString()}</small>`;
+
+            const userInfo = document.createElement('div');
+            userInfo.innerHTML = `<small><strong>User:</strong> ${order.user?.fullname || 'N/A'} &lt;${order.user?.email || ''}&gt;</small>`;
+
+            const itemsDiv = document.createElement('div');
+            itemsDiv.style.display = 'flex';
+            itemsDiv.style.flexWrap = 'wrap';
+            itemsDiv.style.gap = '8px';
+            itemsDiv.style.marginTop = '8px';
+
+            (order.items || []).forEach(it => {
+              const itBox = document.createElement('div');
+              itBox.style.display = 'flex';
+              itBox.style.alignItems = 'center';
+              itBox.style.gap = '8px';
+              itBox.style.border = '1px solid #f0f2f6';
+              itBox.style.padding = '6px';
+              itBox.style.borderRadius = '6px';
+
+              const img = document.createElement('img');
+              img.src = (it.image && it.image.startsWith('/uploads')) ? `http://127.0.0.1:8000${it.image}` : (it.image || '');
+              img.style.width = '64px';
+              img.style.height = '64px';
+              img.style.objectFit = 'cover';
+              img.onerror = () => { img.style.display = 'none'; };
+
+              const meta = document.createElement('div');
+              meta.innerHTML = `<div><strong>${it.name}</strong></div><div>Qty: ${it.quantity} • ₹${it.price}</div>`;
+
+              itBox.appendChild(img);
+              itBox.appendChild(meta);
+              itemsDiv.appendChild(itBox);
+            });
+
+            const footer = document.createElement('div');
+            footer.style.marginTop = '8px';
+            footer.innerHTML = `<div><strong>Total:</strong> ₹${order.total} &nbsp; <strong>Payment:</strong> ${order.paymentStatus} &nbsp; <strong>Method:</strong> ${order.paymentMethod}</div>`;
+
+            const actions = document.createElement('div');
+            actions.style.marginTop = '8px';
+
+            if (order.paymentStatus !== 'paid') {
+              const payBtn = document.createElement('button');
+              payBtn.textContent = 'Mark Paid';
+              payBtn.className = 'btn';
+              payBtn.addEventListener('click', async () => {
+                if (!confirm('Mark this order as paid?')) return;
+                try {
+                  const r = await fetch(`${API_BASE_URL}/orders/${order._id}/pay`, { method: 'POST', headers: getAuthHeader() });
+                  if (!r.ok) throw new Error('Failed to mark paid');
+                  await loadOrders();
+                } catch (e) {
+                  alert('Error: ' + e.message);
+                }
+              });
+              actions.appendChild(payBtn);
+            }
+
+            card.appendChild(header);
+            card.appendChild(userInfo);
+            card.appendChild(itemsDiv);
+            card.appendChild(footer);
+            card.appendChild(actions);
+
+            list.appendChild(card);
+          });
+
+          container.innerHTML = '';
+          container.appendChild(list);
+        } catch (err) {
+          container.innerHTML = `<span style="color:crimson">Error loading orders: ${err.message}</span>`;
+        }
+      }
+
+      // Initial load
+      loadOrders();
+
+      // Logout handler
+      document.getElementById('logoutBtn').addEventListener('click', function(e){
+        e.preventDefault();
+        if (confirm('Logout from admin account?')) logout();
+      });
+    })();
+  </script>
+</body>
+</html>

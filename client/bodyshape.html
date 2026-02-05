@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/indexstyle.css">
+    
+</head>
+<style>
+  
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    /* Navbar Styles */
+    .navbar {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 70px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .nav-brand a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #667eea;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-brand a:hover {
+      color: #764ba2;
+    }
+
+    .nav-brand i {
+      font-size: 1.8rem;
+    }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: #333;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+
+    .nav-link:hover {
+      background: #f0f0f0;
+      color: #667eea;
+    }
+
+    .nav-link.active {
+      background: #667eea;
+      color: white;
+    }
+
+    .nav-link.auth-btn {
+      border: 2px solid #e0e0e0;
+      color: #333;
+    }
+
+    .nav-link.auth-btn:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+
+    .nav-link.auth-btn.primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+
+    .nav-link.auth-btn.primary:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+
+    .nav-divider {
+      width: 1px;
+      height: 30px;
+      background: #e0e0e0;
+      margin: 0 5px;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        height: 60px;
+        padding: 0 15px;
+      }
+
+      .nav-toggle {
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-menu {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        gap: 0;
+        border-top: 1px solid #e0e0e0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+
+      .nav-menu.active {
+        max-height: 500px;
+      }
+
+      .nav-menu li {
+        width: 100%;
+      }
+
+      .nav-link {
+        width: 100%;
+        padding: 15px 20px;
+        border-radius: 0;
+        justify-content: flex-start;
+      }
+
+      .nav-divider {
+        width: 100%;
+        height: 1px;
+        margin: 5px 0;
+      }
+
+      .nav-brand span {
+        display: none;
+      }
+
+      .nav-brand i {
+        font-size: 1.5rem;
+      }
+    }
+    .body-shape-section {
+  display: flex;
+  justify-content: center;
+  margin: 60px 0;
+}
+
+.body-card {
+  background: #ffffff;
+  padding: 30px;
+  width: 420px;
+  border-radius: 18px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.body-card h2 {
+  margin-bottom: 10px;
+}
+
+.body-card p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-size: 13px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.result-box {
+  margin-top: 20px;
+  background: #f3f4f6;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+</style>
+<body>
+    <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <i class="ri-shopping-bag-line"></i>
+          <span>Dressify AI</span>
+        </a>
+      </div>
+      
+      <button class="nav-toggle" onclick="toggleNavMenu()">
+        <i class="ri-menu-line"></i>
+      </button>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a></li>
+        <li><a href="ai-hub.html" class="nav-link"><i class="ri-sparks-line"></i> AI Hub</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><i class="ri-user-3-line"></i> Avatar</a></li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><i class="ri-chat-3-line"></i> Chat</a></li>
+        <li><a href="products.html" class="nav-link"><i class="ri-store-line"></i> Products</a></li>
+        <li><a href="add-product.html" class="nav-link" id="addProductLink" style="display:none;"><i class="ri-image-add-line"></i> Add Product</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="login.html" class="nav-link auth-btn"><i class="ri-login-box-line"></i> Login</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><i class="ri-user-add-line"></i> Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
+    <section class="body-shape-section">
+  <div class="body-card">
+    <h2>🧍‍♀️ Body Shape Calculator</h2>
+    <p>Enter your measurements to get personalized style suggestions</p>
+
+    <div class="input-group">
+      <label>Bust (cm)</label>
+      <input type="number" id="bust" placeholder="e.g. 90">
+    </div>
+
+    <div class="input-group">
+      <label>Waist (cm)</label>
+      <input type="number" id="waist" placeholder="e.g. 70">
+    </div>
+
+    <div class="input-group">
+      <label>Hips (cm)</label>
+      <input type="number" id="hips" placeholder="e.g. 95">
+    </div>
+
+    <button class="btn primary" onclick="calculateBodyShape()">Calculate Body Shape</button>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+</section>
+    <script>
+        function calculateBodyShape() {
+        const bust = parseFloat(document.getElementById('bust').value);
+        const waist = parseFloat(document.getElementById('waist').value);
+        const hips = parseFloat(document.getElementById('hips').value);
+        let bodyShape = '';
+        let suggestions = '';
+    
+        if (isNaN(bust) || isNaN(waist) || isNaN(hips)) {
+            document.getElementById('resultBox').innerHTML = 'Please enter valid measurements for all fields.';
+            return;
+        }
+    
+        const waistToHipRatio = waist / hips;
+        const bustToWaistRatio = bust / waist;
+    
+        if (bust > hips && waist < hips) {
+            bodyShape = 'Hourglass';
+            suggestions = 'Emphasize your waist with fitted dresses and high-waisted skirts.';
+        } else if (hips > bust && waist < bust) {
+            bodyShape = 'Pear';
+            suggestions = 'Highlight your upper body with off-shoulder tops and A-line skirts.';
+        } else if (bust > waist && bust > hips) {
+            bodyShape = 'Inverted Triangle';
+            suggestions = 'Balance your silhouette with wide-leg pants and flared skirts.';
+        } else if (waist >= bust && waist >= hips) {
+            bodyShape = 'Rectangle';
+            suggestions = 'Create curves with ruffled tops and belted dresses.';
+        } else {
+            bodyShape = 'Apple';
+            suggestions = 'Opt for empire waist dresses and V-neck tops to elongate your torso.';
+        }
+    
+        document.getElementById('resultBox').innerHTML = `<h3>Your Body Shape: ${bodyShape}</h3><p>${suggestions}</p>`;
+        }
+    </script>
+    <footer>
+      <div class="section__container footer__container">
+        <div class="footer__col">
+          <div class="footer__logo">
+            <a href="#">DRESSIFY_AI</a>
+          </div>
+          <p>Complete your style with awesome clothes from us.</p>
+          <ul class="footer__socials">
+            <li>
+              <a href="Facebook.com"><i class="ri-facebook-fill"></i></a>
+            </li>
+            <li>
+              <a href="#"><i class="ri-instagram-line"></i></a>
+            </li>
+            <li>
+              <a href="#"><i class="ri-twitter-fill"></i></a>
+            </li>
+            <li>
+              <a href="#"><i class="ri-linkedin-fill"></i></a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Company</h4>
+          <ul class="footer__links">
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Quick Links</h4>
+          <ul class="footer__links">
+            <li><a href="#">Store Location</a></li>
+            <li><a href="#">Order Tracking</a></li>
+            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">FAQs</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>Legal</h4>
+          <ul class="footer__links">
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bar">
+      </div>
+    </footer>
+</body>
+</html>
