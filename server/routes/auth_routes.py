@@ -67,3 +67,14 @@ def login():
         }), 200
     
     return jsonify({'message': 'Invalid credentials'}), 401
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.json
+    email = data.get('email')
+    
+    user = User.query.filter_by(email=email).first()
+    if user:
+        # In a real app, you would send an email with a reset token here
+        return jsonify({'message': 'Password reset instructions sent to your email'}), 200
+    
+    return jsonify({'message': 'Email address not found'}), 404

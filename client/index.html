@@ -1,513 +1,409 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/indexstyle.css" />
-    <title>Dressify AI - Fashion Made Smart</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="css/indexstyle.css">
+  
+  <style>
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+    }
 
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    .modal-content {
+      background-color: #FDF5F6;
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
 
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: #f8f9fa;
-        color: #333;
-      }
+    .close-modal {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #B76E79;
+    }
 
-      /* Navbar Styles */
-      .navbar {
-        background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-      }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
 
-      .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 70px;
-      }
+    .modal-header ion-icon {
+      font-size: 2.5rem;
+      color: #CD7F32;
+    }
 
-      .nav-brand {
-        display: flex;
-        align-items: center;
-        font-size: 1.5rem;
-        font-weight: 700;
-      }
+    .modal-header h2 {
+      color: #4D0F0F;
+      margin: 0;
+    }
 
-      .nav-brand a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #667eea;
-        text-decoration: none;
-        transition: color 0.3s;
-      }
+    .modal-body p {
+      line-height: 1.6;
+      color: #333;
+    }
 
-      .nav-brand a:hover {
-        color: #764ba2;
-      }
-
-      .nav-brand i {
-        font-size: 1.8rem;
-      }
-
-      .nav-menu {
-        display: flex;
-        list-style: none;
-        gap: 5px;
-        align-items: center;
-      }
-
-      .nav-link {
-        color: #333;
-        text-decoration: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-weight: 500;
-        font-size: 0.95rem;
-      }
-
-      .nav-link:hover {
-        background: #f0f0f0;
-        color: #667eea;
-      }
-
-      .nav-link.active {
-        background: #667eea;
-        color: white;
-      }
-
-      .nav-link.auth-btn {
-        border: 2px solid #e0e0e0;
-        color: #333;
-      }
-
-      .nav-link.auth-btn:hover {
-        border-color: #667eea;
-        color: #667eea;
-      }
-
-      .nav-link.auth-btn.primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-      }
-
-      .nav-link.auth-btn.primary:hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-      }
-
-      .nav-divider {
-        width: 1px;
-        height: 30px;
-        background: #e0e0e0;
-        margin: 0 5px;
-      }
-
-      .nav-toggle {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-        color: #333;
-      }
-
-      @media (max-width: 768px) {
-        .nav-container {
-          height: 60px;
-          padding: 0 15px;
-        }
-
-        .nav-toggle {
-          display: flex;
-          align-items: center;
-        }
-
-        .nav-menu {
-          position: absolute;
-          top: 60px;
-          left: 0;
-          right: 0;
-          background: white;
-          flex-direction: column;
-          gap: 0;
-          border-top: 1px solid #e0e0e0;
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.3s ease;
-        }
-
-        .nav-menu.active {
-          max-height: 500px;
-        }
-
-        .nav-menu li {
-          width: 100%;
-        }
-
-        .nav-link {
-          width: 100%;
-          padding: 15px 20px;
-          border-radius: 0;
-          justify-content: flex-start;
-        }
-
-        .nav-divider {
-          width: 100%;
-          height: 1px;
-          margin: 5px 0;
-        }
-
-        .nav-brand span {
-          display: none;
-        }
-
-        .nav-brand i {
-          font-size: 1.5rem;
-        }
-      }
-
-      /* Hero Section */
-      .hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 80px 20px;
-        text-align: center;
-      }
-
-      .hero-container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .hero h1 {
-        font-size: 3.5rem;
-        margin-bottom: 20px;
-        font-weight: 700;
-      }
-
-      .hero p {
-        font-size: 1.2rem;
-        margin-bottom: 30px;
-        opacity: 0.95;
-      }
-
-      .hero-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        padding: 12px 30px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.3s;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        font-size: 1rem;
-      }
-
-      .btn-primary {
-        background: white;
-        color: #667eea;
-      }
-
-      .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      .btn-secondary {
-        background: transparent;
-        color: white;
-        border: 2px solid white;
-      }
-
-      .btn-secondary:hover {
-        background: white;
-        color: #667eea;
-      }
-
-      /* Features Section */
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 60px 20px;
-      }
-
-      .section-title {
-        text-align: center;
-        font-size: 2.5rem;
-        margin-bottom: 50px;
-        color: #333;
-      }
-
-      .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-        margin-bottom: 50px;
-      }
-
-      .feature-card {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        text-align: center;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        transition:
-          transform 0.3s,
-          box-shadow 0.3s;
-      }
-
-      .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
-      }
-
-      .feature-card i {
-        font-size: 3rem;
-        color: #667eea;
-        margin-bottom: 15px;
-      }
-
-      .feature-card h3 {
-        font-size: 1.5rem;
-        margin-bottom: 15px;
-        color: #333;
-      }
-
-      .feature-card p {
-        color: #666;
-        line-height: 1.6;
-      }
-
-      footer {
-        background: #333;
-        color: white;
-        text-align: center;
-        padding: 30px;
-        margin-top: 50px;
-      }
-
-      footer p {
-        margin: 10px 0;
-        font-size: 0.9rem;
-      }
-
-      footer a {
-        color: #667eea;
-        text-decoration: none;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-      <div class="nav-container">
-        <div class="nav-brand">
-          <a href="index.html">
-            <i class="ri-shopping-bag-line"></i>
-            <span>Dressify AI</span>
-          </a>
-        </div>
-
-        <button class="nav-toggle" onclick="toggleNavMenu()">
-          <i class="ri-menu-line"></i>
-        </button>
-
-        <ul class="nav-menu" id="navMenu">
-          <li>
-            <a href="index.html" class="nav-link"
-              ><i class="ri-home-line"></i> Home</a
-            >
-          </li>
-          <li>
-            <a href="ai-hub.html" class="nav-link"
-              ><i class="ri-sparks-line"></i> AI Hub</a
-            >
-          </li>
-          <li>
-            <a href="avatar-customizer.html" class="nav-link"
-              ><i class="ri-user-3-line"></i> Avatar</a
-            >
-          </li>
-          <li>
-            <a href="gemini_chatbot.html" class="nav-link"
-              ><i class="ri-chat-3-line"></i> Chat</a
-            >
-          </li>
-          <li>
-            <a href="products.html" class="nav-link"
-              ><i class="ri-store-line"></i> Products</a
-            >
-          </li>
-          <li>
-            <a
-              href="admin/add-product.html"
-              class="nav-link"
-              id="addProductLink"
-              style="display: none"
-              ><i class="ri-image-add-line"></i> Add Product</a
-            >
-          </li>
-          <li class="nav-divider"></li>
-          <li>
-            <a href="login.html" class="nav-link auth-btn"
-              ><i class="ri-login-box-line"></i> Login</a
-            >
-          </li>
-          <li>
-            <a href="signup.html" class="nav-link auth-btn primary"
-              ><i class="ri-user-add-line"></i> Sign Up</a
-            >
-          </li>
-        </ul>
+    .feature-card {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span>Dressify AI</span>
+        </a>
       </div>
-    </nav>
+      
+      <button class="nav-toggle" onclick="toggleNavMenu()">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
+        <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-container">
-        <h1>Fashion Made Smart</h1>
-        <p>Discover your perfect style with AI-powered recommendations</p>
-        <div class="hero-buttons">
-          <a href="ai-hub.html"
-            ><button class="btn btn-primary">
-              <i class="ri-sparks-line"></i> AI Recommendations
-            </button></a
-          >
-          <a href="avatar-customizer.html"
-            ><button class="btn btn-secondary">
-              <i class="ri-user-3-line"></i> Create Avatar
-            </button></a
-          >
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <h1>Fashion Made Smart</h1>
+      <p>Discover your perfect style with AI-powered recommendations</p>
+      <div class="hero-buttons">
+        <a href="ai-hub.html"><button class="btn btn-primary"><ion-icon name="sparkles-outline"></ion-icon> AI Recommendations</button></a>
+        <a href="avatar-customizer.html"><button class="btn btn-secondary"><ion-icon name="body-outline"></ion-icon> Create Avatar</button></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Second Hero / Featured Section from Client -->
+  <header>
+    <div class="section__container header__container">
+      <div class="header__content">
+        <h1>
+          <span>LET'S</span>
+          <br />
+          FIND YOUR
+          <br />
+          <span>BEST </span>
+          <br />
+          CLOTHES.
+        </h1>
+        <p>Live for influential and innovative fashion!</p>
+        <div class="header__btns">
+          <a href="#fashion"><button class="btn btn-primary">START NOW </button></a>
         </div>
       </div>
-    </section>
+      <div class="header__image">
+        <img src="assets/header.png" alt="header" />
+      </div>
+    </div>
+  </header>
 
-    <!-- Features Section -->
+  <!-- New Arrivals from Client -->
+  <section class="section__container arrival__container" id="catalogue">
+    <h2 class="section__header">NEW ARRIVALS</h2>
+    <div class="arrival__grid">
+      <div class="arrival__card" onclick="window.location.href='ai-hub.html?style=Casual'" style="cursor: pointer;">
+        <div class="arrival__image">
+          <img src="assets/image1.png" alt="arrival" />
+        </div>
+        <div class="arrival__content">
+          <div>
+            <h4>Casual </h4>
+            <p>Style for every day</p>
+          </div>
+          <span><ion-icon name="arrow-forward-outline"></ion-icon></span>
+        </div>
+      </div>
+      <div class="arrival__card" onclick="window.location.href='ai-hub.html?style=Traditional'" style="cursor: pointer;">
+        <div class="arrival__image">
+          <img src="assets/image2.png" alt="arrival" />
+        </div>
+        <div class="arrival__content">
+          <div>
+            <h4>Traditional </h4>
+            <p>Classic elegance</p>
+          </div>
+          <span><ion-icon name="arrow-forward-outline"></ion-icon></span>
+        </div>
+      </div>
+      <div class="arrival__card" onclick="window.location.href='ai-hub.html?style=Formal'" style="cursor: pointer;">
+        <div class="arrival__image">
+          <img src="assets/image3.png" alt="arrival" />
+        </div>
+        <div class="arrival__content">
+          <div>
+            <h4>Formal</h4>
+            <p>Smart and sharp</p>
+          </div>
+          <span><ion-icon name="arrow-forward-outline"></ion-icon></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Sale / Suggestion Section from Client -->
+  <section class="sale" id="fashion">
+    <div class="section__container sale__container">
+      <div class="sale__image">
+        <img src="assets/bg.1.png" alt="sale" />
+      </div>
+      <div class="sale__content">
+        <h2><span>Suggest With AI</span><br /></h2>
+        <p>Enjoy Every Day With DRESSIFY_AI</p>
+        <h4>“AI That Knows Your Style.”</h4>
+        <p>*Terms and conditions apply</p>
+        <div class="sale__btn">
+          <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+          <button class="btn btn-primary" id="uploadBtn">UPLOAD IMAGE</button>
+          <button class="btn btn-secondary" id="cameraBtn">OPEN CAMERA</button>
+          <a href="avatar-customizer.html"><button class="btn btn-primary">CREATE AVATAR</button></a>
+        </div>
+        <div id="imagePreview" style="margin-top: 20px;"></div>
+        <div id="loading" style="display: none; margin-top: 20px; color: var(--mahogany);">Generating suggestions... <ion-icon name="reload-outline" class="ri-spin"></ion-icon></div>
+        <button class="btn btn-primary" id="analyzeBtn" style="display: none; margin-top: 10px; background: var(--mahogany); color: white;">ANALYZE & SUGGEST</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
     <div class="container">
       <h2 class="section-title">Why Choose Dressify AI?</h2>
       <div class="features-grid">
-        <div class="feature-card">
-          <i class="ri-sparks-line"></i>
+        <div class="feature-card" onclick="window.location.href='ai-hub.html'">
+          <ion-icon name="sparkles-outline"></ion-icon>
           <h3>AI Recommendations</h3>
-          <p>
-            Get personalized fashion suggestions powered by advanced AI
-            technology
-          </p>
+          <p>Get personalized fashion suggestions powered by advanced AI technology</p>
         </div>
-        <div class="feature-card">
-          <i class="ri-image-add-line"></i>
+        <div class="feature-card" onclick="window.location.href='#fashion'">
+          <ion-icon name="image-outline"></ion-icon>
           <h3>Image Upload</h3>
-          <p>
-            Upload your photos and get instant style analysis and
-            recommendations
-          </p>
+          <p>Upload your photos and get instant style analysis and recommendations</p>
         </div>
-        <div class="feature-card">
-          <i class="ri-user-3-line"></i>
+        <div class="feature-card" onclick="window.location.href='avatar-customizer.html'">
+          <ion-icon name="body-outline"></ion-icon>
           <h3>Avatar Creator</h3>
-          <p>
-            Create and customize your fashion avatar with thousands of clothing
-            options
-          </p>
+          <p>Create and customize your fashion avatar with thousands of clothing options</p>
         </div>
-        <div class="feature-card">
-          <i class="ri-chat-3-line"></i>
+        <div class="feature-card" onclick="window.location.href='gemini_chatbot.html'">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
           <h3>Fashion Chat</h3>
-          <p>
-            Chat with our AI about fashion trends, style tips, and outfit
-            matching
-          </p>
+          <p>Chat with our AI about fashion trends, style tips, and outfit matching</p>
         </div>
-        <div class="feature-card">
-          <i class="ri-palette-line"></i>
+        <div class="feature-card" onclick="window.location.href='ai-hub.html'">
+          <ion-icon name="color-palette-outline"></ion-icon>
           <h3>Style Presets</h3>
-          <p>
-            Choose from curated style presets: Casual, Formal, Sporty, and more
-          </p>
+          <p>Choose from curated style presets: Casual, Formal, Sporty, and more</p>
         </div>
-        <div class="feature-card">
-          <i class="ri-download-line"></i>
+        <div class="feature-card" onclick="window.location.href='avatar-customizer.html'">
+          <ion-icon name="download-outline"></ion-icon>
           <h3>Download Avatars</h3>
           <p>Save and download your custom avatars to share on social media</p>
         </div>
       </div>
     </div>
+  </section>
 
-    <footer>
-      <div class="hero-container">
-        <p>ड्रेसिफाई AI - Smart Fashion for Everyone</p>
-        <p>&copy; 2026 Dressify AI. All rights reserved.</p>
+  <!-- Modal Structure -->
+  <div id="infoModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <div id="modalContent">
+        <!-- Content injected by JS -->
       </div>
-    </footer>
+    </div>
+  </div>
 
-    <script>
-      function toggleNavMenu() {
-        const navMenu = document.getElementById("navMenu");
-        navMenu.classList.toggle("active");
+  <footer class="footer">
+    <div class="footer__container section__container">
+      <div class="footer__col">
+        <div class="footer__logo">
+          <a href="index.html">Dressify AI</a>
+        </div>
+        <p>
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
+        </p>
+        <ul class="footer__socials">
+          <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Navigation</h4>
+        <ul class="footer__links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="ai-hub.html">AI Hub</a></li>
+          <li><a href="avatar-customizer.html">Avatar</a></li>
+          <li><a href="gemini_chatbot.html">Chat</a></li>
+          <li><a href="bodyshape.html">Body Shape</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <ul class="footer__links">
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Join Us</h4>
+        <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
+        <form style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer__bar">
+      &copy; 2026 Dressify AI. All rights reserved. Precision in Every Pixel.
+    </div>
+  </footer>
+  
+  <script>
+    const featureData = {
+      'ai-recommendations': {
+        title: 'AI Recommendations',
+        icon: 'sparkles-outline',
+        text: 'Our advanced machine learning algorithms analyze your unique features and style preferences to suggest the perfect outfits for any occasion. Whether it is a formal gala or a casual day out, Dressify AI ensures you always look your best.'
+      },
+      'image-upload': {
+        title: 'Image Upload',
+        icon: 'image-outline',
+        text: 'Simply upload a photo of yourself or a piece of clothing you love. Our vision AI will analyze colors, patterns, and style to provide instant matching suggestions and complete outfit ideas from our curated catalog.'
+      },
+      'avatar-creator': {
+        title: 'Avatar Creator',
+        icon: 'body-outline',
+        text: 'Experience virtual try-ons like never before. Create a high-fidelity 3D avatar of yourself to test different clothing combinations, sizes, and styles before you make a purchase. It is fashion without the fitting room!'
+      },
+      'fashion-chat': {
+        title: 'Fashion Chat',
+        icon: 'chatbubbles-outline',
+        text: 'Need style advice? Our conversational AI assistant is available 24/7. Ask for outfit ideas, current fashion trends, or how to style a specific accessory. It is like having a professional stylist in your pocket.'
+      },
+      'style-presets': {
+        title: 'Style Presets',
+        icon: 'color-palette-outline',
+        text: 'Browse through professionally curated style categories including Minimalist, Bohemian, Streetwear, and Classic Formal. Use these presets as a foundation to discover your signature look.'
+      },
+      'download-avatars': {
+        title: 'Download & Share',
+        icon: 'download-outline',
+        text: 'Export your customized avatars and outfit designs in high resolution. Share them with friends for feedback or save your favorite looks for future reference in your personal style wardrobe.'
       }
+    };
 
-      // Close menu when link is clicked
-      document.querySelectorAll(".nav-link").forEach((link) => {
-        link.addEventListener("click", () => {
-          document.getElementById("navMenu").classList.remove("active");
-        });
-      });
+    function openModal(topic) {
+      const data = featureData[topic];
+      const modal = document.getElementById('infoModal');
+      const content = document.getElementById('modalContent');
+      
+      content.innerHTML = `
+        <div class="modal-header">
+          <ion-icon name="${data.icon}"></ion-icon>
+          <h2>${data.title}</h2>
+        </div>
+        <div class="modal-body">
+          <p>${data.text}</p>
+        </div>
+      `;
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
 
-      // Highlight active page
-      document.addEventListener("DOMContentLoaded", () => {
-        const currentPage =
-          window.location.pathname.split("/").pop() || "index.html";
-        document.querySelectorAll(".nav-link").forEach((link) => {
-          const href = link.getAttribute("href");
-          if (
-            href === currentPage ||
-            (currentPage === "" && href === "index.html")
-          ) {
-            link.classList.add("active");
-          }
-        });
+    function closeModal() {
+      document.getElementById('infoModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
 
-        // Admin check
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        const addProductLink = document.getElementById("addProductLink");
-        if (user.isAdmin && addProductLink) {
-          addProductLink.style.display = "flex";
+    // Close modal on outside click
+    window.onclick = function(event) {
+      const modal = document.getElementById('infoModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+
+    // Attach click events to feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+      card.onclick = () => openModal(card.getAttribute('data-topic'));
+    });
+
+  </script>
+  <script src="js/navbar-init.js"></script>
+  <script>
+
+    // Simple AI Suggestion Logic placeholder
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const loading = document.getElementById('loading');
+
+    if (uploadBtn && imageUpload) {
+      uploadBtn.onclick = () => imageUpload.click();
+      imageUpload.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (re) => {
+            imagePreview.innerHTML = `<img src="${re.target.result}" style="max-width: 100%; border-radius: 10px;">`;
+            analyzeBtn.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
         }
-      });
-    </script>
-  </body>
+      };
+    }
+
+    if (analyzeBtn) {
+      analyzeBtn.onclick = () => {
+        analyzeBtn.style.display = 'none';
+        loading.style.display = 'flex';
+        setTimeout(() => {
+          loading.style.display = 'none';
+          window.location.href = 'ai-hub.html';
+        }, 2000);
+      };
+    }
+  </script>
+</body>
 </html>

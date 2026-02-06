@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Dressify AI</title>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="css/indexstyle.css">
+  <style>
+    .support-section { padding: 80px 20px; background: #FDF5F6; min-height: 60vh; }
+    .support-container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); }
+    .support-header { text-align: center; margin-bottom: 40px; }
+    .support-header h1 { color: var(--mahogany); font-size: 2.5rem; margin-bottom: 10px; }
+    .faq-list { display: grid; gap: 20px; margin-top: 40px; }
+    .faq-item { border-bottom: 1px solid #eee; padding-bottom: 20px; }
+    .faq-item h3 { color: var(--mahogany); margin-bottom: 10px; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+    .faq-item h3 ion-icon { color: var(--primary); }
+    .faq-item p { color: #666; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span>Dressify AI</span>
+        </a>
+      </div>
+      <button class="nav-toggle" onclick="toggleNavMenu()">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
+        <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="support-section">
+    <div class="support-container">
+      <div class="support-header">
+        <h1>Frequently Asked Questions</h1>
+        <p>Find quick answers to your questions about Dressify AI.</p>
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item">
+          <h3><ion-icon name="help-circle-outline"></ion-icon> What is Dressify AI?</h3>
+          <p>Dressify AI is an artificial intelligence-powered fashion platform that provides personalized style recommendations, virtual avatar customization, and professional fashion advice through conversational AI.</p>
+        </div>
+        <div class="faq-item">
+          <h3><ion-icon name="help-circle-outline"></ion-icon> How does the AI Recommend outfits?</h3>
+          <p>Our machine learning models analyze your body shape, skin tone, current trends, and personal preferences to suggest outfits from our curated fashion database.</p>
+        </div>
+        <div class="faq-item">
+          <h3><ion-icon name="help-circle-outline"></ion-icon> Is the Virtual Avatar Creator free?</h3>
+          <p>Yes, the basic Virtual Avatar Creator is free to use for all registered users. You can create a high-fidelity 3D representation of yourself and try on various styles.</p>
+        </div>
+        <div class="faq-item">
+          <h3><ion-icon name="help-circle-outline"></ion-icon> How do I use the Fashion Chat?</h3>
+          <p>Simply navigate to the Chat page and ask our AI assistant anything about fashion, trends, or specific styling advice. It's available 24/7!</p>
+        </div>
+        <div class="faq-item">
+          <h3><ion-icon name="help-circle-outline"></ion-icon> Can I download my avatar?</h3>
+          <p>Yes, you can export and download your customized avatars in high resolution to share with friends or save for later inspiration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__container section__container">
+      <div class="footer__col">
+        <div class="footer__logo">
+          <a href="index.html">Dressify AI</a>
+        </div>
+        <p>Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.</p>
+        <ul class="footer__socials">
+          <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Navigation</h4>
+        <ul class="footer__links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="ai-hub.html">AI Hub</a></li>
+          <li><a href="avatar-customizer.html">Avatar</a></li>
+          <li><a href="gemini_chatbot.html">Chat</a></li>
+          <li><a href="bodyshape.html">Body Shape</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <ul class="footer__links">
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Join Us</h4>
+        <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
+        <form style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="email" placeholder="Your email" required style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer__bar">&copy; 2026 Dressify AI. All rights reserved. Precision in Every Pixel.</div>
+  </footer>
+
+  <script src="js/navbar-init.js"></script>
+</body>
+</html>

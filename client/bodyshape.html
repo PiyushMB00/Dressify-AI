@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Body Shape Calculator - Dressify AI</title>
+    <link rel="stylesheet" href="css/indexstyle.css">
+    
+</head>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Poppins', sans-serif; background: #f8f9fa; color: #333; }
+    
+    .body-shape-section { display: flex; justify-content: center; padding: 80px 20px; background: #FDF5F6; }
+    .body-card { background: #ffffff; padding: 40px; max-width: 500px; width: 100%; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.08); text-align: center; }
+    .body-card h2 { color: var(--mahogany); margin-bottom: 12px; font-size: 1.8rem; }
+    .body-card p { font-size: 1rem; color: #666; margin-bottom: 30px; }
+    
+    .input-group { text-align: left; margin-bottom: 20px; }
+    .input-group label { font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 8px; color: var(--mahogany); }
+    .input-group input { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid #eee; font-family: inherit; transition: 0.3s; }
+    .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(183,110,121,0.1); }
+    
+    .result-box { margin-top: 30px; background: var(--light); padding: 20px; border-radius: 15px; font-size: 1rem; border: 1px dashed var(--primary); display: none; }
+    .result-box h3 { color: var(--primary); margin-bottom: 10px; }
+    
+    .calc-btn { width: 100%; padding: 14px; border: none; border-radius: 50px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    .calc-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(183,110,121,0.3); }
+  </style>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span>Dressify AI</span>
+        </a>
+      </div>
+      
+      <button class="nav-toggle" onclick="toggleNavMenu()">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
+        <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-container">
+      <h1>🧍‍♀️ Body Shape Calculator</h1>
+      <p>Analyze your body type and get tailored style recommendations</p>
+    </div>
+  </section>
+    <section class="body-shape-section">
+  <div class="body-card">
+    <h2>🧍‍♀️ Body Shape Calculator</h2>
+    <p>Enter your measurements to get personalized style suggestions</p>
+
+    <div class="input-group">
+      <label>Bust (cm)</label>
+      <input type="number" id="bust" placeholder="e.g. 90">
+    </div>
+
+    <div class="input-group">
+      <label>Waist (cm)</label>
+      <input type="number" id="waist" placeholder="e.g. 70">
+    </div>
+
+    <div class="input-group">
+      <label>Hips (cm)</label>
+      <input type="number" id="hips" placeholder="e.g. 95">
+    </div>
+
+    <button class="calc-btn" onclick="calculateBodyShape()">Calculate Shape</button>
+
+    <div id="resultBox" class="result-box"></div>
+  </div>
+</section>
+    <script>
+        function calculateBodyShape() {
+        const bust = parseFloat(document.getElementById('bust').value);
+        const waist = parseFloat(document.getElementById('waist').value);
+        const hips = parseFloat(document.getElementById('hips').value);
+        let bodyShape = '';
+        let suggestions = '';
+    
+        if (isNaN(bust) || isNaN(waist) || isNaN(hips)) {
+            document.getElementById('resultBox').innerHTML = 'Please enter valid measurements for all fields.';
+            return;
+        }
+    
+        const waistToHipRatio = waist / hips;
+        const bustToWaistRatio = bust / waist;
+    
+        if (bust > hips && waist < hips) {
+            bodyShape = 'Hourglass';
+            suggestions = 'Emphasize your waist with fitted dresses and high-waisted skirts.';
+        } else if (hips > bust && waist < bust) {
+            bodyShape = 'Pear';
+            suggestions = 'Highlight your upper body with off-shoulder tops and A-line skirts.';
+        } else if (bust > waist && bust > hips) {
+            bodyShape = 'Inverted Triangle';
+            suggestions = 'Balance your silhouette with wide-leg pants and flared skirts.';
+        } else if (waist >= bust && waist >= hips) {
+            bodyShape = 'Rectangle';
+            suggestions = 'Create curves with ruffled tops and belted dresses.';
+        } else {
+            bodyShape = 'Apple';
+            suggestions = 'Opt for empire waist dresses and V-neck tops to elongate your torso.';
+        }
+    
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('resultBox').innerHTML = `<h3>Your Shape: ${bodyShape}</h3><p>${suggestions}</p>`;
+        }
+    </script>
+    <script src="js/navbar-init.js"></script>
+  <footer class="footer">
+    <div class="footer__container section__container">
+      <div class="footer__col">
+        <div class="footer__logo">
+          <a href="index.html">Dressify AI</a>
+        </div>
+        <p>
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
+        </p>
+        <ul class="footer__socials">
+          <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Navigation</h4>
+        <ul class="footer__links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="ai-hub.html">AI Hub</a></li>
+          <li><a href="avatar-customizer.html">Avatar</a></li>
+          <li><a href="gemini_chatbot.html">Chat</a></li>
+          <li><a href="bodyshape.html">Body Shape</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <ul class="footer__links">
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Join Us</h4>
+        <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
+        <form style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer__bar">
+      &copy; 2026 Dressify AI. All rights reserved. Precision in Every Pixel.
+    </div>
+  </footer>
+</body>
+</html>

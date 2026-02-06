@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fashion Chat - Dressify AI</title>
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+  <link rel="stylesheet" href="css/indexstyle.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      color: #333;
+    }
+
+
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .chatbox-wrapper {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+
+    .chat-header {
+      background: #000;
+      color: #fff;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .chat-body {
+      height: 300px;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    .user {
+      text-align: right;
+      margin: 8px;
+      color: #000;
+      font-weight: 500;
+    }
+
+    .bot {
+      text-align: left;
+      margin: 8px;
+      color: #2b7a78;
+      font-weight: 500;
+    }
+
+    .chat-footer {
+      display: flex;
+      padding: 8px;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-footer input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    .chat-footer button {
+      margin-left: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: #000;
+      color: white;
+      cursor: pointer;
+    }
+
+    .chat-footer button:hover {
+      background: #79d1ad;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <a href="index.html">
+          <ion-icon name="bag-handle-outline"></ion-icon>
+          <span>Dressify AI</span>
+        </a>
+      </div>
+      
+      <button class="nav-toggle" onclick="toggleNavMenu()">
+        <ion-icon name="menu-outline"></ion-icon>
+      </button>
+      
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
+        <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
+        <li class="nav-divider"></li>
+        <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-container">
+      <h1>💬 Dressify AI Fashion Chat</h1>
+      <p>Chat with our AI about trends, styles, and matching tips</p>
+    </div>
+  </section>
+    
+    <div class="chatbox-wrapper">
+      <div class="chatbox">
+        <div class="chat-header">Dressify AI 🤖 (Gemini)</div>
+
+        <div class="chat-body" id="chatBody">
+          <div class="bot">Hi 👋 I'm Dressify AI. Ask me about outfits!</div>
+        </div>
+
+        <div class="chat-footer">
+          <input id="userInput" placeholder="Ask about fashion...">
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+async function sendMessage() {
+  const input = document.getElementById("userInput");
+  const chat = document.getElementById("chatBody");
+
+  if (!input.value) return;
+
+  // User message
+  chat.innerHTML += `<div class="user">${input.value}</div>`;
+
+  // Call FastAPI Gemini endpoint
+  const response = await fetch("http://127.0.0.1:8000/gemini-chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: input.value })
+  });
+
+  const data = await response.json();
+
+  // Bot reply
+  chat.innerHTML += `<div class="bot">${data.reply}</div>`;
+
+  input.value = "";
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+<script src="js/navbar-init.js"></script>
+
+
+  <footer class="footer">
+    <div class="footer__container section__container">
+      <div class="footer__col">
+        <div class="footer__logo">
+          <a href="index.html">Dressify AI</a>
+        </div>
+        <p>
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
+        </p>
+        <ul class="footer__socials">
+          <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-instagram"></ion-icon></a></li>
+          <li><a href="#"><ion-icon name="logo-twitter"></ion-icon></a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Navigation</h4>
+        <ul class="footer__links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="ai-hub.html">AI Hub</a></li>
+          <li><a href="avatar-customizer.html">Avatar</a></li>
+          <li><a href="gemini_chatbot.html">Chat</a></li>
+          <li><a href="bodyshape.html">Body Shape</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Support</h4>
+        <ul class="footer__links">
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Join Us</h4>
+        <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
+        <form style="display: flex; gap: 10px; margin-top: 10px;">
+          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer__bar">
+      &copy; 2026 Dressify AI. All rights reserved. Precision in Every Pixel.
+    </div>
+  </footer>
+</body>
+
+</html>
+    
+
