@@ -1,646 +1,513 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/indexstyle.css"/>
-  <title>Dressify AI - Fashion Made Smart</title>
-  
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/indexstyle.css" />
+    <title>Dressify AI - Fashion Made Smart</title>
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
-      color: #333;
-    }
-
-    /* Navbar Styles */
-    .navbar {
-      background: white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    }
-
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-    }
-
-    .nav-brand a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #667eea;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .nav-brand a:hover {
-      color: #764ba2;
-    }
-
-    .nav-brand i {
-      font-size: 1.8rem;
-    }
-
-    .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .nav-link {
-      color: #333;
-      text-decoration: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 500;
-      font-size: 0.95rem;
-    }
-
-    .nav-link:hover {
-      background: #f0f0f0;
-      color: #667eea;
-    }
-
-    .nav-link.active {
-      background: #667eea;
-      color: white;
-    }
-
-    .nav-link.auth-btn {
-      border: 2px solid #e0e0e0;
-      color: #333;
-    }
-
-    .nav-link.auth-btn:hover {
-      border-color: #667eea;
-      color: #667eea;
-    }
-
-    .nav-link.auth-btn.primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-    }
-
-    .nav-link.auth-btn.primary:hover {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-
-    .nav-divider {
-      width: 1px;
-      height: 30px;
-      background: #e0e0e0;
-      margin: 0 5px;
-    }
-
-    .nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #333;
-    }
-
-    @media (max-width: 768px) {
-      .nav-container {
-        height: 60px;
-        padding: 0 15px;
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      .nav-toggle {
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f8f9fa;
+        color: #333;
+      }
+
+      /* Navbar Styles */
+      .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+      }
+
+      .nav-brand {
         display: flex;
         align-items: center;
+        font-size: 1.5rem;
+        font-weight: 700;
       }
 
-      .nav-menu {
-        position: absolute;
-        top: 60px;
-        left: 0;
-        right: 0;
-        background: white;
-        flex-direction: column;
-        gap: 0;
-        border-top: 1px solid #e0e0e0;
-        max-height: 0;
-        overflow: hidden;
-        transition: max-height 0.3s ease;
+      .nav-brand a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s;
       }
 
-      .nav-menu.active {
-        max-height: 500px;
-      }
-
-      .nav-menu li {
-        width: 100%;
-      }
-
-      .nav-link {
-        width: 100%;
-        padding: 15px 20px;
-        border-radius: 0;
-        justify-content: flex-start;
-      }
-
-      .nav-divider {
-        width: 100%;
-        height: 1px;
-        margin: 5px 0;
-      }
-
-      .nav-brand span {
-        display: none;
+      .nav-brand a:hover {
+        color: #764ba2;
       }
 
       .nav-brand i {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
       }
-    }
 
-    /* Hero Section */
-    .hero {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 80px 20px;
-      text-align: center;
-    }
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 5px;
+        align-items: center;
+      }
 
-    .hero-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+      .nav-link {
+        color: #333;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
 
-    .hero h1 {
-      font-size: 3.5rem;
-      margin-bottom: 20px;
-      font-weight: 700;
-    }
+      .nav-link:hover {
+        background: #f0f0f0;
+        color: #667eea;
+      }
 
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-      opacity: 0.95;
-    }
+      .nav-link.active {
+        background: #667eea;
+        color: white;
+      }
 
-    .hero-buttons {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+      .nav-link.auth-btn {
+        border: 2px solid #e0e0e0;
+        color: #333;
+      }
 
-    .btn {
-      padding: 12px 30px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 1rem;
-    }
+      .nav-link.auth-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+      }
 
-    .btn-primary {
-      background: white;
-      color: #667eea;
-    }
+      .nav-link.auth-btn.primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    }
+      .nav-link.auth-btn.primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      }
 
-    .btn-secondary {
-      background: transparent;
-      color: white;
-      border: 2px solid white;
-    }
+      .nav-divider {
+        width: 1px;
+        height: 30px;
+        background: #e0e0e0;
+        margin: 0 5px;
+      }
 
-    .btn-secondary:hover {
-      background: white;
-      color: #667eea;
-    }
+      .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #333;
+      }
 
-    /* Features Section */
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 60px 20px;
-    }
-
-    .section-title {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 50px;
-      color: #333;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      margin-bottom: 50px;
-    }
-
-    .feature-card {
-      background: white;
-      border-radius: 15px;
-      padding: 30px;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
-    }
-
-    .feature-card i {
-      font-size: 3rem;
-      color: #667eea;
-      margin-bottom: 15px;
-    }
-
-    .feature-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 15px;
-      color: #333;
-    }
-
-    .feature-card p {
-      color: #666;
-      line-height: 1.6;
-    }
-
-    footer {
-      background: #333;
-      color: white;
-      text-align: center;
-      padding: 30px;
-      margin-top: 50px;
-    }
-
-    footer p {
-      margin: 10px 0;
-      font-size: 0.9rem;
-    }
-
-    footer a {
-      color: #667eea;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <a href="index.html">
-          <i class="ri-shopping-bag-line"></i>
-          <span>Dressify AI</span>
-        </a>
-      </div>
-      
-      <button class="nav-toggle" onclick="toggleNavMenu()">
-        <i class="ri-menu-line"></i>
-      </button>
-      
-      <ul class="nav-menu" id="navMenu">
-        <li><a href="index.html" class="nav-link"><i class="ri-home-line"></i> Home</a></li>
-        <li><a href="ai-hub.html" class="nav-link"><i class="ri-sparks-line"></i> AI Hub</a></li>
-        <li><a href="avatar-customizer.html" class="nav-link"><i class="ri-user-3-line"></i> Avatar</a></li>
-        <li><a href="gemini_chatbot.html" class="nav-link"><i class="ri-chat-3-line"></i> Chat</a></li>
-        <li><a href="products.html" class="nav-link"><i class="ri-store-line"></i> Products</a></li>
-        <li><a href="admin/add-product.html" class="nav-link" id="addProductLink" style="display:none;"><i class="ri-image-add-line"></i> Add Product</a></li>
-        <li class="nav-divider"></li>
-        <li><a href="login.html" class="nav-link auth-btn"><i class="ri-login-box-line"></i> Login</a></li>
-        <li><a href="signup.html" class="nav-link auth-btn primary"><i class="ri-user-add-line"></i> Sign Up</a></li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-container">
-      <h1>Fashion Made Smart</h1>
-      <p>Discover your perfect style with AI-powered recommendations</p>
-      <div class="hero-buttons">
-        <a href="ai-hub.html"><button class="btn btn-primary"><i class="ri-sparks-line"></i> AI Recommendations</button></a>
-        <a href="avatar-customizer.html"><button class="btn btn-secondary"><i class="ri-user-3-line"></i> Create Avatar</button></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
-  <div class="container">
-    <h2 class="section-title">Why Choose Dressify AI?</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <i class="ri-sparks-line"></i>
-        <h3>AI Recommendations</h3>
-        <p>Get personalized fashion suggestions powered by advanced AI technology</p>
-      </div>
-      <div class="feature-card">
-        <i class="ri-image-add-line"></i>
-        <h3>Image Upload</h3>
-        <p>Upload your photos and get instant style analysis and recommendations</p>
-      </div>
-      <div class="feature-card">
-        <i class="ri-user-3-line"></i>
-        <h3>Avatar Creator</h3>
-        <p>Create and customize your fashion avatar with thousands of clothing options</p>
-      </div>
-      <div class="feature-card">
-        <i class="ri-chat-3-line"></i>
-        <h3>Fashion Chat</h3>
-        <p>Chat with our AI about fashion trends, style tips, and outfit matching</p>
-      </div>
-      <div class="feature-card">
-        <i class="ri-palette-line"></i>
-        <h3>Style Presets</h3>
-        <p>Choose from curated style presets: Casual, Formal, Sporty, and more</p>
-      </div>
-      <div class="feature-card">
-        <i class="ri-download-line"></i>
-        <h3>Download Avatars</h3>
-        <p>Save and download your custom avatars to share on social media</p>
-      </div>
-    </div>
-  </div>
-
-  
-  <script>
-    function toggleNavMenu() {
-      const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('active');
-    }
-
-    // Close menu when link is clicked
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        document.getElementById('navMenu').classList.remove('active');
-      });
-    });
-
-    // Highlight active page
-    document.addEventListener('DOMContentLoaded', () => {
-      const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-      document.querySelectorAll('.nav-link').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === currentPage || (currentPage === '' && href === 'index.html')) {
-          link.classList.add('active');
+      @media (max-width: 768px) {
+        .nav-container {
+          height: 60px;
+          padding: 0 15px;
         }
-      });
-    });
-  </script>
-</body>
-</html>
-    <header>
-      <div class="section__container header__container">
-        <div class="header__content">
-          <h1>
-            <span>LET'S</span>
-            <br />
-            FIND YOUR
-            <br />
-            <span>BEST </span>
-            <br />
-            CLOTHES.
-          </h1>
-          <p>Live for influential and innovative fashion!</p>
-          <div class="header__btns">
-            <a href="#fashion"><button class="btn">START </button></a>
-          </div>
+
+        .nav-toggle {
+          display: flex;
+          align-items: center;
+        }
+
+        .nav-menu {
+          position: absolute;
+          top: 60px;
+          left: 0;
+          right: 0;
+          background: white;
+          flex-direction: column;
+          gap: 0;
+          border-top: 1px solid #e0e0e0;
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+        }
+
+        .nav-menu.active {
+          max-height: 500px;
+        }
+
+        .nav-menu li {
+          width: 100%;
+        }
+
+        .nav-link {
+          width: 100%;
+          padding: 15px 20px;
+          border-radius: 0;
+          justify-content: flex-start;
+        }
+
+        .nav-divider {
+          width: 100%;
+          height: 1px;
+          margin: 5px 0;
+        }
+
+        .nav-brand span {
+          display: none;
+        }
+
+        .nav-brand i {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 20px;
+        text-align: center;
+      }
+
+      .hero-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        opacity: 0.95;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: white;
+        color: #667eea;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+      }
+
+      .btn-secondary:hover {
+        background: white;
+        color: #667eea;
+      }
+
+      /* Features Section */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 20px;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 50px;
+        color: #333;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+      }
+
+      .feature-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+      }
+
+      .feature-card i {
+        font-size: 3rem;
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .feature-card p {
+        color: #666;
+        line-height: 1.6;
+      }
+
+      footer {
+        background: #333;
+        color: white;
+        text-align: center;
+        padding: 30px;
+        margin-top: 50px;
+      }
+
+      footer p {
+        margin: 10px 0;
+        font-size: 0.9rem;
+      }
+
+      footer a {
+        color: #667eea;
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-brand">
+          <a href="index.html">
+            <i class="ri-shopping-bag-line"></i>
+            <span>Dressify AI</span>
+          </a>
         </div>
-        <div class="header__image">
-          <img src="assets/header.png" alt="header" />
-        </div>
+
+        <button class="nav-toggle" onclick="toggleNavMenu()">
+          <i class="ri-menu-line"></i>
+        </button>
+
+        <ul class="nav-menu" id="navMenu">
+          <li>
+            <a href="index.html" class="nav-link"
+              ><i class="ri-home-line"></i> Home</a
+            >
+          </li>
+          <li>
+            <a href="ai-hub.html" class="nav-link"
+              ><i class="ri-sparks-line"></i> AI Hub</a
+            >
+          </li>
+          <li>
+            <a href="avatar-customizer.html" class="nav-link"
+              ><i class="ri-user-3-line"></i> Avatar</a
+            >
+          </li>
+          <li>
+            <a href="gemini_chatbot.html" class="nav-link"
+              ><i class="ri-chat-3-line"></i> Chat</a
+            >
+          </li>
+          <li>
+            <a href="products.html" class="nav-link"
+              ><i class="ri-store-line"></i> Products</a
+            >
+          </li>
+          <li>
+            <a
+              href="admin/add-product.html"
+              class="nav-link"
+              id="addProductLink"
+              style="display: none"
+              ><i class="ri-image-add-line"></i> Add Product</a
+            >
+          </li>
+          <li class="nav-divider"></li>
+          <li>
+            <a href="login.html" class="nav-link auth-btn"
+              ><i class="ri-login-box-line"></i> Login</a
+            >
+          </li>
+          <li>
+            <a href="signup.html" class="nav-link auth-btn primary"
+              ><i class="ri-user-add-line"></i> Sign Up</a
+            >
+          </li>
+        </ul>
       </div>
-    </header>
-    <section class="banner">
-      <div class="banner__container">
-        <img src="assets/banner-1.png" alt="banner" />
-        <img src="assets/banner-2.png" alt="banner" />
-        <img src="assets/banner-3.png" alt="banner" />
-        <img src="assets/banner-4.png" alt="banner" />
-        <img src="assets/banner-5.png" alt="banner" />
-        <img src="assets/banner-6.png" alt="banner" />
-        <img src="assets/banner-7.png" alt="banner" />
-        <img src="assets/banner-8.png" alt="banner" />
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-container">
+        <h1>Fashion Made Smart</h1>
+        <p>Discover your perfect style with AI-powered recommendations</p>
+        <div class="hero-buttons">
+          <a href="ai-hub.html"
+            ><button class="btn btn-primary">
+              <i class="ri-sparks-line"></i> AI Recommendations
+            </button></a
+          >
+          <a href="avatar-customizer.html"
+            ><button class="btn btn-secondary">
+              <i class="ri-user-3-line"></i> Create Avatar
+            </button></a
+          >
+        </div>
       </div>
     </section>
-    <section class="section__container arrival__container" id="catalogue">
-      <h2 class="section__header">NEW ARRIVALS</h2>
-      <div class="arrival__grid">
-        <div class="arrival__card">
-          <div class="arrival__image">
-            <img src="assets/image1.png" alt="arrival" />
-          </div>
-          <div class="arrival__content">
-            <div>
-              <h4>Casule </h4>
-              <a href="#">Explore Now</a>
-            </div>
-            <span><i class="ri-arrow-right-line"></i></span>
-          </div>
-        </div>
-        <div class="arrival__card">
-          <div class="arrival__image">
-            <img src="assets/image2.png" alt="arrival" />
-          </div>
-          <div class="arrival__content">
-            <div>
-              <h4>Treditional </h4>
-              <a href="#">Explore Now</a>
-            </div>
-            <span><i class="ri-arrow-right-line"></i></span>
-          </div>
-        </div>
-        <div class="arrival__card">
-          <div class="arrival__image">
-            <img src="assets/image3.png" alt="arrival" />
-          </div>
-          <div class="arrival__content">
-            <div>
-              <h4>Formal</h4>
-              <a href="#">Explore Now</a>
-            </div>
-            <span><i class="ri-arrow-right-line"></i></span>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section class="sale" id="fashion">
-      <div class="section__container sale__container">
-        <div class="sale__image">
-          <img src="assets/bg.1.png" alt="sale" />
-        </div>
-        <div class="sale__content">
-          <h2><span>Suggest With AI</span><br /></h2>
+
+    <!-- Features Section -->
+    <div class="container">
+      <h2 class="section-title">Why Choose Dressify AI?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <i class="ri-sparks-line"></i>
+          <h3>AI Recommendations</h3>
           <p>
-            Enjoy Every Day With DRESSIFY_AI
+            Get personalized fashion suggestions powered by advanced AI
+            technology
           </p>
-          <h4>“AI That Knows Your Style.”</h4>
-          <p>*Terms and conditions apply</p>
-          <div class="sale__btn">
-            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
-            <button class="btn" id="uploadBtn">UPLOAD IMAGE</button>
-            <button class="btn" id="cameraBtn">OPEN CAMERA</button>
-            <button class="btn" id="createAvatarBtn">CREATE AVATAR</button>
-          </div>
-          <div id="imagePreview" style="margin-top: 20px;"></div>
-          <div id="avatarDisplay" style="margin-top: 20px; display: none;">
-            <h4>Your Avatar:</h4>
-            <img id="avatarImg" alt="User Avatar" style="max-width: 200px; border-radius: 10px;">
-          </div>
-          <div id="loading" style="display: none; margin-top: 20px;">Generating suggestions... <i class="ri-loader-4-line"></i></div>
-          <button class="btn" id="analyzeBtn" style="display: none; margin-top: 10px;">ANALYZE & SUGGEST</button>
         </div>
-      </div>
-    </section>
-    <div id="suggestions" class="suggestions__container" style="display: none;">
-      <div class="section__container">
-        <h2 class="section__header">AI Suggestions</h2>
-        <p id="analysisResult"></p>
-        <div class="suggestions__grid"></div>
+        <div class="feature-card">
+          <i class="ri-image-add-line"></i>
+          <h3>Image Upload</h3>
+          <p>
+            Upload your photos and get instant style analysis and
+            recommendations
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="ri-user-3-line"></i>
+          <h3>Avatar Creator</h3>
+          <p>
+            Create and customize your fashion avatar with thousands of clothing
+            options
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="ri-chat-3-line"></i>
+          <h3>Fashion Chat</h3>
+          <p>
+            Chat with our AI about fashion trends, style tips, and outfit
+            matching
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="ri-palette-line"></i>
+          <h3>Style Presets</h3>
+          <p>
+            Choose from curated style presets: Casual, Formal, Sporty, and more
+          </p>
+        </div>
+        <div class="feature-card">
+          <i class="ri-download-line"></i>
+          <h3>Download Avatars</h3>
+          <p>Save and download your custom avatars to share on social media</p>
+        </div>
       </div>
     </div>
-    <section class="promo">
-      <div class="section__container promo__container">
-        <h2 class="section__header">AI CHATBOT</h2>
-        <p>Any Problem Chat with AI</p>
-        <form id="chatForm" action="/">
-          <input type="text" id="chatInput" placeholder="Ask Me about fashion or the site..." />
-          <button type="button" onclick="startVoice()">🎙️ Speak</button>
-          <button type="submit" class="btn">SEND</button>
-        </form>
-        <div id="chatWindow" style="margin-top: 20px; max-height: 300px; overflow-y: auto; background: var(--extra-light); padding: 10px; border-radius: 10px;"></div>
-      </div>
-    </section>
+
     <footer>
-      <div class="section__container footer__container">
-        <div class="footer__col">
-          <div class="footer__logo">
-            <a href="#">DRESSIFY_AI</a>
-          </div>
-          <p>Complete your style with awesome clothes from us.</p>
-          <ul class="footer__socials">
-            <li>
-              <a href="Facebook.com"><i class="ri-facebook-fill"></i></a>
-            </li>
-            <li>
-              <a href="#"><i class="ri-instagram-line"></i></a>
-            </li>
-            <li>
-              <a href="#"><i class="ri-twitter-fill"></i></a>
-            </li>
-            <li>
-              <a href="#"><i class="ri-linkedin-fill"></i></a>
-            </li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4>Company</h4>
-          <ul class="footer__links">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Support</a></li>
-            <li><a href="#">Careers</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4>Quick Links</h4>
-          <ul class="footer__links">
-            <li><a href="avatar-customizer.html">Avatar Customizer</a></li>
-            <li><a href="products.html">Order Tracking</a></li>
-            <li><a href="gemini_chatbot.html">Size Guide</a></li>
-            
-            <li><a href="bodyshape.html">Body shape Calculator</a></li>
-          </ul>
-        </div>
-        <div class="footer__col">
-          <h4>Legal</h4>
-          <ul class="footer__links">
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer__bar">
+      <div class="hero-container">
+        <p>ड्रेसिफाई AI - Smart Fashion for Everyone</p>
+        <p>&copy; 2026 Dressify AI. All rights reserved.</p>
       </div>
     </footer>
-    <!-- Camera Modal -->
-    <div id="cameraModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <video id="video" autoplay></video>
-        <canvas id="canvas" style="display: none;"></canvas>
-        <button class="btn" id="captureBtn">CAPTURE</button>
-      </div>
-    </div>
-    <!-- Avatar Creation Modal -->
-    <div id="avatarModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <span class="close" id="closeAvatarModal">&times;</span>
-        <h3>Create Your Avatar (Snapchat Style)</h3>
-        <div id="avatarOptions">
-          <label>Skin: <select id="skinSelect"><option value="light">Light</option><option value="dark">Dark</option><option value="medium">Medium</option></select></label>
-          <label>Hair: <select id="hairSelect"><option value="long">Long</option><option value="short">Short</option><option value="curly">Curly</option></select></label>
-          <label>Eyes: <select id="eyesSelect"><option value="normal">Normal</option><option value="happy">Happy</option><option value="sleepy">Sleepy</option></select></label>
-          <label>Mouth: <select id="mouthSelect"><option value="smile">Smile</option><option value="neutral">Neutral</option><option value="sad">Sad</option></select></label>
-        </div>
-        <button class="btn" id="generateAvatarBtn">GENERATE AVATAR</button>
-        <div id="avatarPreview" style="margin-top: 20px;"></div>
-        <button class="btn" id="useAvatarBtn" style="display: none; margin-top: 10px;">USE THIS AVATAR</button>
-      </div>
-    </div>
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <script src="js/Main.js"></script>
+
     <script>
-      // Show "Add Product" link for admins only
-      window.addEventListener('load', function() {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const addProductLink = document.getElementById('addProductLink');
+      function toggleNavMenu() {
+        const navMenu = document.getElementById("navMenu");
+        navMenu.classList.toggle("active");
+      }
+
+      // Close menu when link is clicked
+      document.querySelectorAll(".nav-link").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.getElementById("navMenu").classList.remove("active");
+        });
+      });
+
+      // Highlight active page
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentPage =
+          window.location.pathname.split("/").pop() || "index.html";
+        document.querySelectorAll(".nav-link").forEach((link) => {
+          const href = link.getAttribute("href");
+          if (
+            href === currentPage ||
+            (currentPage === "" && href === "index.html")
+          ) {
+            link.classList.add("active");
+          }
+        });
+
+        // Admin check
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const addProductLink = document.getElementById("addProductLink");
         if (user.isAdmin && addProductLink) {
-          addProductLink.style.display = 'flex';
+          addProductLink.style.display = "flex";
         }
       });
     </script>
   </body>
-</html
+</html>
