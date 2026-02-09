@@ -10,6 +10,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @upload_bp.route('/', methods=['POST'])
+@upload_bp.route('/upload', methods=['POST'])
 def upload_file():
     if 'image' not in request.files:
         return jsonify({'message': 'No file part'}), 400

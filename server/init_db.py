@@ -1,6 +1,6 @@
 from app import app
 from extensions import db, bcrypt
-from models import Product, User
+from models import Product, User, ImageMetadata, AIRecommendation, AIChat, Avatar, SavedOutfit
 
 def seed_database():
     with app.app_context():

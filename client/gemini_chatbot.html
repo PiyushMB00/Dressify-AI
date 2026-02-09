@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,7 +44,7 @@
       max-width: 800px;
       margin: 0 auto;
     }
-    
+
 
     .chat-header {
       background: #000;
@@ -104,6 +105,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- Navigation -->
@@ -115,20 +117,23 @@
           <span>Dressify AI</span>
         </a>
       </div>
-      
+
       <button class="nav-toggle" onclick="toggleNavMenu()">
         <ion-icon name="menu-outline"></ion-icon>
       </button>
-      
+
       <ul class="nav-menu" id="navMenu">
         <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
         <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
-        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
-        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a>
+        </li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a>
+        </li>
         <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
         <li class="nav-divider"></li>
         <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
-        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign
+            Up</a></li>
       </ul>
     </div>
   </nav>
@@ -139,50 +144,84 @@
       <p>Chat with our AI about trends, styles, and matching tips</p>
     </div>
   </section>
-    
-    <div class="chatbox-wrapper">
-      <div class="chatbox">
-        <div class="chat-header">Dressify AI 🤖 (Gemini)</div>
 
-        <div class="chat-body" id="chatBody">
-          <div class="bot">Hi 👋 I'm Dressify AI. Ask me about outfits!</div>
-        </div>
+  <div class="chatbox-wrapper">
+    <div class="chatbox">
+      <div class="chat-header">Dressify AI 🤖 (Gemini)</div>
 
-        <div class="chat-footer">
-          <input id="userInput" placeholder="Ask about fashion...">
-          <button onclick="sendMessage()">Send</button>
-        </div>
+      <div class="chat-body" id="chatBody">
+        <div class="bot">Hi 👋 I'm Dressify AI. Ask me about outfits!</div>
+      </div>
+
+      <div class="chat-footer">
+        <input id="userInput" placeholder="Ask about fashion...">
+        <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
+  </div>
 
-<script>
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const chat = document.getElementById("chatBody");
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const chat = document.getElementById("chatBody");
 
-  if (!input.value) return;
+      if (!input.value) return;
 
-  // User message
-  chat.innerHTML += `<div class="user">${input.value}</div>`;
+      // User message
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      chat.innerHTML += `<div class="user">${input.value} <span style="font-size:0.7em; color:#666;">${now}</span></div>`;
+      chat.scrollTop = chat.scrollHeight;
 
-  // Call FastAPI Gemini endpoint
-  const response = await fetch("http://127.0.0.1:8000/gemini-chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: input.value })
-  });
+      // Loading state
+      const loadingId = 'loading-' + Date.now();
+      chat.innerHTML += `<div class="bot" id="${loadingId}">Typing...</div>`;
+      chat.scrollTop = chat.scrollHeight;
 
-  const data = await response.json();
+      // Get/Save userId
+      let userId = localStorage.getItem('dressify_userId');
+      if (!userId) {
+        userId = 'user_' + Date.now();
+        localStorage.setItem('dressify_userId', userId);
+      }
 
-  // Bot reply
-  chat.innerHTML += `<div class="bot">${data.reply}</div>`;
+      // Call API
+      const API_URL = 'http://127.0.0.1:8000/api';
+      try {
+        const response = await fetch(`${API_URL}/ai-hub/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: userId,
+            message: input.value,
+            conversationId: localStorage.getItem('dressify_convId') || null
+          })
+        });
 
-  input.value = "";
-  chat.scrollTop = chat.scrollHeight;
-}
-</script>
-<script src="js/navbar-init.js"></script>
+        const data = await response.json();
+
+        // Remove loading
+        document.getElementById(loadingId).remove();
+
+        if (data.success) {
+          chat.innerHTML += `<div class="bot">${data.aiReply} <span style="font-size:0.7em; color:#666;">${now}</span></div>`;
+          if (data.conversationId) {
+            localStorage.setItem('dressify_convId', data.conversationId);
+          }
+        } else {
+          chat.innerHTML += `<div class="bot" style="color:red">Error: ${data.message}</div>`;
+        }
+      } catch (err) {
+        document.getElementById(loadingId).remove();
+        chat.innerHTML += `<div class="bot" style="color:red">Connection Error. Please check backend.</div>`;
+      }
+
+
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+  <script src="js/navbar-init.js"></script>
 
 
   <footer class="footer">
@@ -192,7 +231,8 @@ async function sendMessage() {
           <a href="index.html">Dressify AI</a>
         </div>
         <p>
-          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by
+          cutting-edge AI.
         </p>
         <ul class="footer__socials">
           <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
@@ -223,8 +263,10 @@ async function sendMessage() {
         <h4>Join Us</h4>
         <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
         <form style="display: flex; gap: 10px; margin-top: 10px;">
-          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
-          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+          <input type="email" placeholder="Your email"
+            style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn"
+            style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
         </form>
       </div>
     </div>
@@ -235,5 +277,3 @@ async function sendMessage() {
 </body>
 
 </html>
-    
-

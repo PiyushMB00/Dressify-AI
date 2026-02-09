@@ -5,3 +5,6 @@ flask-bcrypt
 python-dotenv
 pillow
 werkzeug
+requests
+python-multipart
+openai
