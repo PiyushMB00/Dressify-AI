@@ -1,7 +1,19 @@
 import datetime
+import os
+import google.generativeai as genai
 from flask import Blueprint, jsonify, request
 from extensions import db
 from models import ImageMetadata, AIRecommendation, AIChat
+import json
+from dotenv import load_dotenv
+import google.generativeai as genai
+load_dotenv()
+
+api_key = os.getenv("GEMINI_API_KEY")
+if not api_key:
+    raise ValueError("No GEMINI_API_KEY found in environment variables")
+genai.configure(api_key=api_key)
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 ai_bp = Blueprint('ai_hub', __name__)
 
@@ -10,7 +22,7 @@ def save_image_metadata():
     data = request.json
     try:
         new_image = ImageMetadata(
-            user_id=data.get('userId'), # In real app, get from session/token
+            user_id=data.get('userId'),
             filename=data.get('filename'),
             original_name=data.get('originalName'),
             filepath=data.get('filepath'),
@@ -27,47 +39,52 @@ def save_image_metadata():
 def get_recommendations():
     data = request.json
     try:
-        # Mock Logic based on input
+        # Extract user data
+        preferences = data.get('preferences', '')
+        budget = data.get('budget', 'Any')
         style = data.get('style', 'Generic')
         occasion = data.get('occasion', 'General')
         
-        mock_recommendations = [
-            {
-                'name': f"{style} Outfit 1",
-                'category': 'Full Body',
-                'description': f"A perfect {style.lower()} look for {occasion.lower()}.",
-                'price': '$45',
-                'color': 'Blue'
-            },
-             {
-                'name': f"{occasion} Accessory",
-                'category': 'Accessory',
-                'description': f"Stylish accessory to match your {style.lower()} vibe.",
-                'price': '$20',
-                'color': 'Silver'
-            }
-        ]
+        # Construct the prompt for Gemini
+        prompt = f"""
+        Act as a professional fashion stylist. I need 3 specific outfit recommendations based on these constraints:
+        - Style: {style}
+        - Occasion: {occasion}
+        - Budget: {budget}
+        - User Preferences: {preferences}
+
+        Return ONLY a raw JSON array (no markdown, no backticks) where each object has these exact keys:
+        "name" (string), "category" (string), "description" (string), "price" (string estimate), "color" (string).
+        """
+
+        # Call Gemini API
+        response = model.generate_content(prompt)
         
+        # Clean response string to ensure it parses as JSON
+        clean_text = response.text.replace('```json', '').replace('```', '').strip()
+        recommendations_data = json.loads(clean_text)
+        
+        # Save to DB
         new_rec = AIRecommendation(
             user_id=data.get('userId'),
-            preferences=data.get('preferences'),
-            budget=data.get('budget'),
+            preferences=preferences,
+            budget=budget,
             style=style,
             occasion=occasion,
-            recommendations=mock_recommendations
+            recommendations=recommendations_data # Stores the list as JSON
         )
         db.session.add(new_rec)
         db.session.commit()
         
         return jsonify({
             'success': True, 
-            'recommendations': mock_recommendations, 
+            'recommendations': recommendations_data, 
             'recommendationId': new_rec.id
         }), 200
         
     except Exception as e:
-        print(e)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        print(f"Error: {e}")
+        return jsonify({'success': False, 'message': "AI service unavailable. Try again later."}), 500
 
 @ai_bp.route('/chat', methods=['POST'])
 def chat_with_ai():
@@ -75,35 +92,28 @@ def chat_with_ai():
     user_message = data.get('message')
     conversation_id = data.get('conversationId')
     
-    # Simple keyword-based mock AI
-    # Enhanced Mock Logic
-    msg_low = user_message.lower()
-    ai_reply = "I'm your AI fashion assistant! Ask me about trends, color matching, or outfit ideas."
-    
-    if 'color' in msg_low or 'match' in msg_low:
-        ai_reply = "For color matching, remember the rule of three: pick a base color, a complementary color, and an accent. Try pairing neutral tons like beige or grey with a bold pop of red or electric blue."
-    elif 'trend' in msg_low:
-        ai_reply = "Current trends favor sustainable fabrics, oversized silhouettes, and 90s retro vibes. Baggy denim and cropped tops are having a big moment!"
-    elif 'work' in msg_low or 'office' in msg_low:
-        ai_reply = "For the workplace, business casual is key. A fitted blazer over a plain tee with chinos or dark jeans works wonders. Keep accessories minimal."
-    elif 'party' in msg_low or 'club' in msg_low:
-        ai_reply = "Time to shine! Sequins and metallic fabrics are perfect for parties. Don't be afraid to experiment with bold jewelry and high-contrast shoes."
-    elif 'casual' in msg_low:
-        ai_reply = "Casual doesn't mean messy. Elevate a simple hoodie and jeans look with clean white sneakers and a layered necklace or a cool watch."
-    elif 'wedding' in msg_low:
-        ai_reply = "For a wedding, consider the dress code. For formal, a long gown or dark suit. For semi-formal, a cocktail dress or light suit/blazer is appropriate."
-    elif 'winter' in msg_low or 'cold' in msg_low:
-        ai_reply = "Layering is essential for winter! Start with thermal basics, add a chunky knit sweater, and finish with a structured wool coat and a scarf."
-    elif 'summer' in msg_low or 'hot' in msg_low:
-        ai_reply = "Stay cool with breathable fabrics like linen and cotton. Light colors reflect heat better. Think sundresses, shorts, and open-toed sandals."
+    if not user_message:
+        return jsonify({'success': False, 'message': "Message is empty"}), 400
 
-        
     try:
+        # Construct a persona for the AI
+        system_instruction = "You are 'Dressify AI', a helpful, trendy, and polite fashion assistant. Keep answers concise (under 3 sentences) unless asked for details."
+        full_prompt = f"{system_instruction}\nUser: {user_message}"
+
+        # Call Gemini API
+        response = model.generate_content(full_prompt)
+        ai_reply = response.text
+
+        # Generate Conversation ID if new
+        if not conversation_id:
+            conversation_id = "chat_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+
+        # Save to DB
         new_chat = AIChat(
             user_id=data.get('userId'),
             message=user_message,
             response=ai_reply,
-            conversation_id=conversation_id or "new_conv_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            conversation_id=conversation_id
         )
         db.session.add(new_chat)
         db.session.commit()
@@ -111,7 +121,8 @@ def chat_with_ai():
         return jsonify({
             'success': True,
             'aiReply': ai_reply,
-            'conversationId': new_chat.conversation_id
+            'conversationId': conversation_id
         })
     except Exception as e:
+        print(f"Chat Error: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500

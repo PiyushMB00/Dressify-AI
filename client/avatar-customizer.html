@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,7 +6,6 @@
   <title>AI Avatar Generator</title>
 
   <style>
-    /* Modern styling with a dark aesthetic */
     body {
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
@@ -91,7 +90,6 @@
       margin-top: 25px;
       border-radius: 16px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-      /* Hides the broken image icon before a source is loaded */
       display: block;
     }
 
@@ -99,7 +97,6 @@
       display: none;
     }
 
-    /* Placeholder color */
     ::placeholder {
       color: rgba(255, 255, 255, 0.4);
     }
@@ -110,6 +107,11 @@
 
   <div class="container">
     <h3>AI Avatar Generator</h3>
+
+    <input type="file" id="photo" accept="image/*">
+    <textarea id="prompt"></textarea>
+    <button onclick="editAvatar()">Edit Outfit</button>
+    <img id="result">
 
     <textarea id="prompt" placeholder="A person wearing a black hoodie and blue jeans"></textarea>
 
@@ -144,8 +146,126 @@
         alert(data.error);
       }
     }
+
+    async function editAvatar() {
+      const file = document.getElementById("photo").files[0];
+      const prompt = document.getElementById("prompt").value;
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("prompt", prompt);
+
+      const res = await fetch("http://localhost:8000/api/avatar/edit-avatar", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById("result").src = data.image;
+    }
+
   </script>
 
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AI Outfit Editor</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0c29;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 420px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 16px;
+    }
+
+    textarea,
+    input,
+    button {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    textarea {
+      height: 80px;
+    }
+
+    button {
+      padding: 12px;
+      cursor: pointer;
+    }
+
+    img {
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h3>AI Outfit Editor</h3>
+
+    <input type="file" id="photo" accept="image/*">
+
+    <textarea id="outfitPrompt" placeholder="Person wearing a black hoodie and blue jeans">
+    </textarea>
+
+    <button type="button" onclick="editAvatar()">Edit Outfit</button>
+
+    <img id="result" />
+  </div>
+
+  <script>
+    async function editAvatar() {
+      const file = document.getElementById("photo").files[0];
+      const prompt = document.getElementById("outfitPrompt").value;
+
+      if (!file) {
+        alert("Please select an image");
+        return;
+      }
+
+      if (!prompt) {
+        alert("Please enter a prompt");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("prompt", prompt);
+
+      const res = await fetch("http://localhost:8000/api/avatar/edit-avatar", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (data.image) {
+        document.getElementById("result").src = data.image;
+      } else {
+        alert(data.error);
+      }
+    }
+  </script>
 </body>
 
 </html>
