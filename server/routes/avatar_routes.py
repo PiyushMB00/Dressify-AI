@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 # Load env
 load_dotenv()
 
-print("HF_TOKEN loaded:", bool(os.getenv("HF_TOKEN")))
-
 avatar_bp = Blueprint("avatar", __name__)
 
 # Initialize Hugging Face client ONCE
