@@ -467,14 +467,14 @@
   <script src="js/navbar-init.js"></script>
   <script>
     const API_URL = 'http://127.0.0.1:8000/api';
-    const AI_HUB_API = 'http://127.0.0.1:8000/api/ai-hub';
+    const GEMINI_API_KEY = 'http://127.0.0.1:8000/api/ai-hub';
     let selectedFile = null;
     let currentUserId = localStorage.getItem('userId') || 'user123'; // Get from localStorage or use default
     let currentConversationId = null;
 
     // Add console logging for debugging
     console.log('API URL:', API_URL);
-    console.log('AI Hub API URL:', AI_HUB_API);
+    console.log('AI Hub API URL:', GEMINI_API_KEY);
     console.log('Current User ID:', currentUserId);
     console.log('Frontend loaded successfully');
 
@@ -535,6 +535,7 @@
     }
 
     // Upload button
+    // REPLACED UPLOAD BUTTON LOGIC
     document.getElementById('uploadBtn').addEventListener('click', async () => {
       if (!selectedFile) {
         showMessage('Please select an image first', 'error', 'uploadMessage');
@@ -545,54 +546,84 @@
       formData.append('image', selectedFile);
 
       try {
+        // Step 1: Upload the Image to Server
         showMessage('Uploading...', 'success', 'uploadMessage');
-        console.log('Uploading to:', `${API_URL}/upload/upload`);
-
         const uploadResponse = await fetch(`${API_URL}/upload/upload`, {
           method: 'POST',
           body: formData
         });
-
-        console.log('Upload response status:', uploadResponse.status);
         const uploadData = await uploadResponse.json();
-        console.log('Upload response data:', uploadData);
 
         if (uploadResponse.ok) {
-          showMessage(`Image uploaded successfully: ${uploadData.filename}`, 'success', 'uploadMessage');
+          showMessage('Image uploaded! Saving metadata...', 'success', 'uploadMessage');
 
-          // Now save image metadata to AI Hub database
-          const metadataResponse = await fetch(`${AI_HUB_API}/image/metadata`, {
+          // Step 2: Save Metadata (Keep this for your history)
+          await fetch(`${GEMINI_API_KEY}/image/metadata`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               userId: currentUserId,
               filename: uploadData.filename,
               originalName: selectedFile.name,
-              filepath: uploadData.path || `/uploads/${uploadData.filename}`,
+              filepath: uploadData.path,
               filesize: selectedFile.size,
               mimetype: selectedFile.type,
-              tags: [],
               status: 'uploaded'
             })
           });
 
-          const metadataData = await metadataResponse.json();
-          console.log('Image metadata saved:', metadataData);
+          // Step 3: TRIGGER AI ANALYSIS (This is the part you were missing!)
+          showMessage('🔮 AI is analyzing your style...', 'success', 'uploadMessage');
+          
+          // Show loading spinner in the results area
+          showResults('Analyzing your outfit options...', true);
 
-          if (metadataResponse.ok) {
-            showMessage('Image metadata saved to database! Image ID: ' + metadataData.imageId, 'success', 'uploadMessage');
+          const analyzeResponse = await fetch(`${GEMINI_API_KEY}/analyze-image`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              filename: uploadData.filename
+            })
+          });
+
+          const analyzeData = await analyzeResponse.json();
+
+          if (analyzeData.success) {
+            showMessage('Analysis Complete!', 'success', 'uploadMessage');
+            
+            // Format the text response nicely
+            // We use .replace to turn newlines into HTML line breaks
+            const formattedAnalysis = analyzeData.analysis.replace(/\n/g, '<br>');
+            
+            const resultsHTML = `
+              <div class="recommendation-item" style="border-left: 4px solid #CD7F32;">
+                <h4><i class="ri-magic-line"></i> Stylist's Analysis</h4>
+                <div style="margin-top:15px; line-height: 1.6; color: #444;">
+                  ${formattedAnalysis}
+                </div>
+              </div>
+            `;
+            
+            // Display directly without using 'displayRecommendations' array logic
+            const resultsSection = document.getElementById('resultsSection');
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = resultsHTML;
+            resultsSection.style.display = 'block';
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+          } else {
+            showMessage('AI Analysis failed: ' + analyzeData.message, 'error', 'uploadMessage');
           }
 
-          clearImage();
         } else {
           showMessage(uploadData.message || 'Upload failed', 'error', 'uploadMessage');
         }
       } catch (error) {
-        console.error('Upload error:', error);
-        showMessage('Upload error: ' + error.message, 'error', 'uploadMessage');
+        console.error('Error:', error);
+        showMessage('Error: ' + error.message, 'error', 'uploadMessage');
       }
     });
-
+    
     // Clear button
     document.getElementById('clearBtn').addEventListener('click', clearImage);
 
@@ -613,7 +644,7 @@
         console.log('Getting recommendations from AI Hub API...');
 
         // Use the new AI Hub API endpoint
-        const response = await fetch(`${AI_HUB_API}/recommendations`, {
+        const response = await fetch(`${GEMINI_API_KEY}/recommendations`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -659,7 +690,7 @@
         console.log('Sending chat message to AI Hub API...');
 
         // Use the new AI Hub API endpoint
-        const response = await fetch(`${AI_HUB_API}/chat`, {
+        const response = await fetch(`${GEMINI_API_KEY}/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -786,7 +817,7 @@
     async function loadRecommendationHistory() {
       try {
         console.log('Loading recommendation history for user:', currentUserId);
-        const response = await fetch(`${AI_HUB_API}/recommendations/${currentUserId}?limit=5`);
+        const response = await fetch(`${GEMINI_API_KEY}/recommendations/${currentUserId}?limit=5`);
         const data = await response.json();
 
         if (data.success && data.total > 0) {
@@ -803,7 +834,7 @@
     async function loadChatHistory() {
       try {
         console.log('Loading chat history for user:', currentUserId);
-        const response = await fetch(`${AI_HUB_API}/chat-history/${currentUserId}?limit=5`);
+        const response = await fetch(`${GEMINI_API_KEY}/chat-history/${currentUserId}?limit=5`);
         const data = await response.json();
 
         if (data.success && data.total > 0) {
@@ -820,7 +851,7 @@
     async function loadUserStats() {
       try {
         console.log('Loading user stats for:', currentUserId);
-        const response = await fetch(`${AI_HUB_API}/stats/${currentUserId}`);
+        const response = await fetch(`${GEMINI_API_KEY}/stats/${currentUserId}`);
         const data = await response.json();
 
         if (data.success) {

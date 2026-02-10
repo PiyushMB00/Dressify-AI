@@ -1,2 +1,18 @@
 .env
 server/.env
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+myenv/
+myproject-venv/
+
+# Python cache and byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+lib/
+lib64/
+*.egg-info/

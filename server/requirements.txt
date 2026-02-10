@@ -8,3 +8,10 @@ werkzeug
 requests
 python-multipart
 openai
+flask-migrate
+google-generativeai
+torch
+diffusers
+transformers
+accelerate
+jwt
