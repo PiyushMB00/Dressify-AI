@@ -12,10 +12,7 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(
-    app,
-    resources={r"/api/*": {"origins": ["http://localhost:3000"]}}
-)
+CORS(app)
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', '')

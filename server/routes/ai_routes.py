@@ -7,6 +7,9 @@ from models import ImageMetadata, AIRecommendation, AIChat
 import json
 from dotenv import load_dotenv
 import google.generativeai as genai
+import PIL.Image
+from flask import current_app
+
 load_dotenv()
 
 api_key = os.getenv("GEMINI_API_KEY")
@@ -16,6 +19,23 @@ genai.configure(api_key=api_key)
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 ai_bp = Blueprint('ai_hub', __name__)
+
+@ai_bp.route('/analyze-image', methods=['POST'])
+def analyze_fashion_image():
+    data = request.json
+    filename = data.get('filename')
+    image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+    
+    if not os.path.exists(image_path):
+        return jsonify({'success': False, 'message': "File not found"}), 404
+
+    try:
+        img = PIL.Image.open(image_path)
+        prompt = "Analyze the person's features in this image and recommend a completely new fashion style that would suit them perfectly."
+        response = model.generate_content([prompt, img])
+        return jsonify({'success': True, 'analysis': response.text})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 @ai_bp.route('/image/metadata', methods=['POST'])
 def save_image_metadata():
@@ -55,6 +75,7 @@ def get_recommendations():
 
         Return ONLY a raw JSON array (no markdown, no backticks) where each object has these exact keys:
         "name" (string), "category" (string), "description" (string), "price" (string estimate), "color" (string).
+        do not include any additional text or explanations. The response should be shown to end user in plain text not with any markdown formatting.
         """
 
         # Call Gemini API
@@ -126,3 +147,21 @@ def chat_with_ai():
     except Exception as e:
         print(f"Chat Error: {e}")
         return jsonify({'success': False, 'message': str(e)}), 500
+    
+# Add these to ai.py
+@ai_bp.route('/recommendations/<user_id>', methods=['GET'])
+def get_recommendation_history(user_id):
+    recs = AIRecommendation.query.filter_by(user_id=user_id).order_by(AIRecommendation.id.desc()).limit(5).all()
+    return jsonify({
+        'success': True, 
+        'recommendations': [r.recommendations for r in recs],
+        'total': len(recs)
+    })
+
+@ai_bp.route('/chat-history/<user_id>', methods=['GET'])
+def get_chat_history(user_id):
+    return jsonify({'success': True, 'chats': [], 'total': 0})
+
+@ai_bp.route('/stats/<user_id>', methods=['GET'])
+def get_user_stats(user_id):
+    return jsonify({'success': True, 'stats': {'uploads': 0, 'recommendations': 0}})
