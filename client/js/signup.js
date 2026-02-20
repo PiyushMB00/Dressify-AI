@@ -2,7 +2,7 @@
 function togglePassword(fieldId) {
   const passwordInput = document.getElementById(fieldId);
   const toggleIcon = event.target;
-  
+
   if (passwordInput.type === "password") {
     passwordInput.type = "text";
     toggleIcon.classList.remove("ri-eye-off-line");
@@ -25,7 +25,7 @@ function showMessage(message, type) {
   const msgDiv = document.getElementById("msg");
   msgDiv.textContent = message;
   msgDiv.className = `message-alert show ${type}`;
-  
+
   if (type === "success") {
     setTimeout(() => {
       window.location.href = "login.html";
@@ -41,7 +41,7 @@ async function signup() {
   const confirmPasswordInput = document.getElementById("confirm-password");
   const termsCheckbox = document.getElementById("terms");
   const msgDiv = document.getElementById("msg");
-  
+
   // Validate inputs
   if (!fullnameInput.value || !emailInput.value || !passwordInput.value || !confirmPasswordInput.value) {
     showMessage("Please fill in all fields", "error");
@@ -81,9 +81,17 @@ async function signup() {
     });
 
     const data = await res.json();
-    
+
     if (res.ok) {
       showMessage("Account created successfully! Redirecting to login...", "success");
-      // Store token in localStorage
-      localStorage.setItem('authToken', data.token);
+      // Store token in localStorage (using 'token' to match login.js)
+      localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      showMessage(data.message || "Signup failed. Please try again.", "error");
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    showMessage(`Error: ${error.message}. Make sure backend is running on http://127.0.0.1:8000`, "error");
+  }
+}

@@ -18,9 +18,9 @@ app.get("/health", (req, res) => {
     status: "Frontend Server running",
     port: PORT,
     backends: {
-      nodejs: "http://localhost:8000",
-      python: "http://localhost:8001",
-      flask_chat: "http://localhost:5000",
+      nodejs: "http://127.0.0.1:8000",
+      python: "http://127.0.0.1:8001",
+      flask_chat: "http://127.0.0.1:5000",
     },
   });
 });
@@ -48,12 +48,12 @@ app.listen(PORT, () => {
 ╔═══════════════════════════════════════════════╗
 ║  🎨 Dressify AI Frontend Server               ║
 ╚═══════════════════════════════════════════════╝
-✅ Server running on http://localhost:${PORT}
-📄 Open http://localhost:${PORT} in your browser
+✅ Server running on http://127.0.0.1:${PORT}
+📄 Open http://127.0.0.1:${PORT} in your browser
 🔗 Connected to:
-   - Node Backend: http://localhost:8000
-   - Python AI: http://localhost:8001
-   - Flask Chat: http://localhost:5000
+   - Node Backend: http://127.0.0.1:8000
+   - Python AI: http://127.0.0.1:8001
+   - Flask Chat: http://127.0.0.1:5000
 ══════════════════════════════════════════════════
   `);
 });

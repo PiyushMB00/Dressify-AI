@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <meta http-equiv="Pragma" content="no-cache" />
   <title>Avatar Customizer - Dressify AI</title>
   <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -76,26 +79,24 @@
     }
 
     .avatar-preview-container {
-      position: relative;
+      /* position: relative;
       width: 100%;
-      margin-bottom: 15px;
+      margin-bottom: 15px; */
+      background: radial-gradient(circle, rgba(255, 252, 0, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+      padding: 20px;
+      border-radius: 20px;
+      margin: 15px 0;
     }
 
     .avatar-image {
-      width: 200px;
-      height: 250px;
-      margin: 0 auto 20px;
-      background: linear-gradient(135deg, #B76E79 0%, #CD7F32 100%);
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      width: 220px !important;
+      height: 220px !important;
+      margin: 0 auto;
+      background: #fff;
+      border: 3px solid #eee;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
-      color: white;
-      transition: transform 0.3s;
-      position: relative;
     }
 
     .avatar-image:hover {
@@ -103,10 +104,54 @@
     }
 
     .avatar-image img {
+      max-height: 90%;
+      width: auto;
+    }
+
+    .avatar-title {
+      font-size: 1.4rem;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    /* Button Organization */
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-snap {
+      background: #FFFC00 !important;
+      color: #000 !important;
+      border: 2px solid #000 !important;
+    }
+
+    .btn-full {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 15px;
+    }
+
+    /* Grid Fixes */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .empty-msg {
+      color: #999;
+      text-align: center;
+      width: 100%;
+      padding: 20px;
     }
 
     .avatar-image.placeholder {
@@ -502,6 +547,7 @@
     }
   </style>
 </head>
+
 <body>
   <!-- Navigation -->
   <nav class="navbar">
@@ -512,20 +558,23 @@
           <span>Dressify AI</span>
         </a>
       </div>
-      
+
       <button class="nav-toggle" onclick="toggleNavMenu()">
         <ion-icon name="menu-outline"></ion-icon>
       </button>
-      
+
       <ul class="nav-menu" id="navMenu">
         <li><a href="index.html" class="nav-link"><ion-icon name="home-outline"></ion-icon> Home</a></li>
         <li><a href="ai-hub.html" class="nav-link"><ion-icon name="sparkles-outline"></ion-icon> AI Hub</a></li>
-        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a></li>
-        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a></li>
+        <li><a href="avatar-customizer.html" class="nav-link"><ion-icon name="person-outline"></ion-icon> Avatar</a>
+        </li>
+        <li><a href="gemini_chatbot.html" class="nav-link"><ion-icon name="chatbubbles-outline"></ion-icon> Chat</a>
+        </li>
         <li><a href="bodyshape.html" class="nav-link"><ion-icon name="body-outline"></ion-icon> Body Shape</a></li>
         <li class="nav-divider"></li>
         <li><a href="login.html" class="nav-link auth-btn"><ion-icon name="log-in-outline"></ion-icon> Login</a></li>
-        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign Up</a></li>
+        <li><a href="signup.html" class="nav-link auth-btn primary"><ion-icon name="person-add-outline"></ion-icon> Sign
+            Up</a></li>
       </ul>
     </div>
   </nav>
@@ -539,137 +588,118 @@
 
   <div class="container">
     <div class="content">
-      <!-- Avatar Display -->
-      <div class="card">
-        <h2><i class="ri-user-3-line"></i> Your Avatar</h2>
-        
+
+      <div class="card avatar-card">
+        <h2><ion-icon name="person-circle-outline"></ion-icon> Your Avatar</h2>
+
         <div class="avatar-display">
-          <div class="avatar-preview-container">
-            <div class="avatar-image placeholder" id="avatarPreview">
-              <i class="ri-user-fill"></i>
+          <div id="avatarName" class="avatar-title"
+            style="font-weight: 700; margin-bottom: 15px; font-size: 1.2rem; color: #B76E79;">
+            {% if session.get('snap_user') %}
+            {{ session['snap_user'].displayName }}
+            {% else %}
+            My Avatar
+            {% endif %}
+          </div>
+
+          <div class="avatar-preview-container"
+            style="background: radial-gradient(circle, rgba(255, 252, 0, 0.1) 0%, rgba(255, 255, 255, 0) 70%); padding: 20px; border-radius: 20px;">
+            <div class="avatar-image" id="avatarPreview"
+              style="width: 200px; height: 200px; margin: 0 auto; background: #fff; border: 3px solid #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 15px;">
+              {% if session.get('snap_user') %}
+              <img id="userBitmoji" src="{{ session['snap_user'].bitmoji.avatar }}" alt="Bitmoji"
+                style="max-height: 100%; width: auto; display: block;">
+              {% else %}
+              <div class="placeholder-content" style="text-align: center; color: #999;">
+                <ion-icon name="person" style="font-size: 4rem;"></ion-icon>
+                <p style="font-size: 0.8rem; margin-top: 5px;">No Avatar Linked</p>
+              </div>
+              {% endif %}
             </div>
-            <div class="avatar-rotation-controls">
-              <button onclick="rotateAvatar('left')" title="Rotate Left"><i class="ri-arrow-left-s-line"></i></button>
-              <button onclick="rotateAvatar('right')" title="Rotate Right"><i class="ri-arrow-right-s-line"></i></button>
-            </div>
           </div>
-          <div id="avatarName" style="font-weight: 600; color: #333; margin-bottom: 10px; text-align: center;">My Avatar</div>
-        </div>
 
-        <div class="current-outfit">
-          <div style="font-weight: 600; color: #B76E79; margin-bottom: 10px;">Current Outfit</div>
-          <div class="outfit-item">
-            <span class="outfit-label">Top:</span>
-            <span class="outfit-value" id="outfit-top">Select a top</span>
-          </div>
-          <div class="outfit-item">
-            <span class="outfit-label">Bottom:</span>
-            <span class="outfit-value" id="outfit-bottom">Select bottoms</span>
-          </div>
-          <div class="outfit-item">
-            <span class="outfit-label">Shoes:</span>
-            <span class="outfit-value" id="outfit-shoes">Select shoes</span>
-          </div>
-          <div class="outfit-item">
-            <span class="outfit-label">Accessory:</span>
-            <span class="outfit-value" id="outfit-accessory">Optional</span>
+          <div class="avatar-actions" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+            {% if not session.get('snap_user') %}
+            <button class="btn btn-snap" id="snapLoginBtn" onclick="startSnapLogin()"
+              style="background: #FFFC00 !important; color: #000 !important; border: 2px solid #000 !important; width: 100%;">
+              <ion-icon name="logo-snapchat"></ion-icon>
+              <span>Link Bitmoji</span>
+            </button>
+            {% else %}
+            <a href="/api/avatar/logout" class="btn btn-secondary" style="width: 100%; font-size: 0.9rem;">
+              <ion-icon name="log-out-outline"></ion-icon> Unlink Snap
+            </a>
+            {% endif %}
+
+            <button class="btn btn-primary" onclick="saveCurrentOutfit()" style="width: 100%;">
+              <ion-icon name="save-outline"></ion-icon> Save Outfit
+            </button>
           </div>
         </div>
-
-        <button class="btn btn-primary" onclick="saveCurrentOutfit()">
-          <i class="ri-save-line"></i> Save This Outfit
-        </button>
-
-        <button class="btn btn-primary" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); margin-top: 10px;" onclick="downloadAvatar()">
-          <i class="ri-download-line"></i> Download Avatar
-        </button>
       </div>
 
-      <!-- Customization Panel -->
       <div class="card">
-        <h2><i class="ri-palette-line"></i> Customize</h2>
-
+        <h2><ion-icon name="color-palette-outline"></ion-icon> Customization</h2>
         <div id="messageBox"></div>
 
-        <div class="form-group">
-          <label for="avatarNameInput">Avatar Name</label>
-          <input type="text" id="avatarNameInput" placeholder="My Fashion Avatar" value="My Fashion Avatar">
-        </div>
-
-        <div class="form-group">
-          <label>Upload Avatar Image</label>
-          <div class="upload-area" id="uploadArea" onclick="document.getElementById('avatarImage').click()">
-            <i class="ri-image-add-line"></i>
-            <p>Click or drag image here</p>
+        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+          <div class="form-group">
+            <label for="avatarNameInput">Display Name</label>
+            <input type="text" id="avatarNameInput" placeholder="Name..."
+              value="{{ session['snap_user'].displayName if session.get('snap_user') else 'My Fashion Avatar' }}">
           </div>
-          <input type="file" id="avatarImage" accept="image/*">
+
+          <div class="form-group">
+            <label for="skinTone">Skin Tone</label>
+            <select id="skinTone">
+              <option value="light">Light</option>
+              <option value="medium" selected>Medium</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="skinTone">Skin Tone</label>
-          <select id="skinTone">
-            <option value="light">Light</option>
-            <option value="medium" selected>Medium</option>
-            <option value="dark">Dark</option>
-            <option value="warm">Warm</option>
-            <option value="cool">Cool</option>
-          </select>
+          <label>Physical Reference</label>
+          <div class="upload-area" id="uploadArea" onclick="document.getElementById('avatarImage').click()">
+            <ion-icon name="cloud-upload-outline"></ion-icon>
+            <p>Click to upload reference</p>
+          </div>
+          <input type="file" id="avatarImage" accept="image/*" style="display:none;">
         </div>
 
-        <div class="form-group">
-          <label for="bodyType">Body Type</label>
-          <select id="bodyType">
-            <option value="average" selected>Average</option>
-            <option value="athletic">Athletic</option>
-            <option value="petite">Petite</option>
-            <option value="tall">Tall</option>
-            <option value="curvy">Curvy</option>
-          </select>
-        </div>
-
-        <button class="btn btn-primary" onclick="createAvatar()">
-          <i class="ri-user-add-line"></i> Create/Update Avatar
+        <button class="btn btn-primary" onclick="createAvatar()" style="width: 100%;">
+          Update Profile
         </button>
       </div>
     </div>
 
-    <!-- Clothing Presets -->
-    <!-- <div class="card">
-      <h2><i class="ri-shirt-line"></i> Style Presets</h2>
-      
-      <div class="presets" id="presetsContainer"></div>
-
-      <button class="btn btn-primary" style="width: 100%;" id="analyzeBtn">
-        <i class="ri-image-scan-line"></i> Upload & Analyze Image
-      </button>
-    </div> -->
-
-    <!-- Clothing Selection -->
-    <div class="card">
-      <h2><i class="ri-shopping-bag-line"></i> Customize Your Outfit</h2>
-      
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('tops')">👕 Tops</button>
-        <button class="tab" onclick="switchTab('bottoms')">👖 Bottoms</button>
-        <button class="tab" onclick="switchTab('shoes')">👞 Shoes</button>
-        <button class="tab" onclick="switchTab('accessories')">💍 Accessories</button>
+    <div class="card clothing-card" style="margin-top: 30px;">
+      <div class="card-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+        <h2><ion-icon name="shirt-outline"></ion-icon> Closet Customizer</h2>
+        <div class="tabs" style="border-bottom: none;">
+          <button class="tab active" onclick="switchTab('tops', this)">Tops</button>
+          <button class="tab" onclick="switchTab('bottoms', this)">Bottoms</button>
+          <button class="tab" onclick="switchTab('shoes', this)">Shoes</button>
+          <button class="tab" onclick="switchTab('accessories', this)">Jewelry</button>
+        </div>
       </div>
-
       <div id="clothingItems" class="clothing-grid"></div>
     </div>
 
-    <!-- Saved Outfits -->
-    <div class="saved-outfits">
-      <h2><i class="ri-bookmark-line"></i> Saved Outfits</h2>
+    <div class="saved-outfits card" style="margin-top: 30px;">
+      <h2><ion-icon name="bookmark-outline"></ion-icon> Saved Lookbook</h2>
       <div id="savedOutfitsContainer">
-        <p style="color: #999; text-align: center; padding: 20px;">No saved outfits yet. Create one to get started!</p>
+        <p style="color: #999; text-align: center; padding: 20px;">Your saved styles will appear here.</p>
       </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
-    const API_URL = 'http://127.0.0.1:8000/api';
+    const API_URL = "http://127.0.0.1:8000/api";
+    axios.defaults.withCredentials = true;
     const userId = 'user_' + Date.now();
     let currentAvatar = null;
     let currentOutfit = {};
@@ -762,51 +792,42 @@
     }
 
     async function createAvatar() {
-      try {
-        let avatarImage = document.getElementById('avatarPreview').querySelector('img');
-        let imageUrl = avatarImage ? avatarImage.src : null;
+      const response = await fetch("http://127.0.0.1:8000/api/avatar/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          name: document.getElementById("avatarNameInput").value
+        })
+      });
 
-        const response = await fetch(`${API_URL}/avatar/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: userId,
-            name: document.getElementById('avatarNameInput').value,
-            skinTone: document.getElementById('skinTone').value,
-            bodyType: document.getElementById('bodyType').value,
-            avatarImage: imageUrl
-          })
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-          currentAvatar = data.avatar;
-          document.getElementById('avatarName').textContent = currentAvatar.name;
-          showMessage('Avatar created successfully!', 'success');
-        } else {
-          showMessage(data.message, 'error');
-        }
-      } catch (error) {
-        showMessage('Error: ' + error.message, 'error');
-      }
+      const data = await response.json();
+      console.log(data);
     }
 
-    function switchTab(category) {
+
+    function startSnapLogin() {
+      window.location.assign(`${API_URL}/avatar/snap/login`);
+    }
+
+
+    function switchTab(category, el) {
       currentTab = category;
-      
-      // Update active tab
+
       document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
       });
-      event.target.classList.add('active');
-      
+
+      if (el) el.classList.add('active');
+
       renderClothingItems(category);
     }
+
 
     function renderClothingItems(category) {
       const items = clothingDatabase[category] || [];
       const container = document.getElementById('clothingItems');
-      
+
       container.innerHTML = items.map(item => `
         <div class="clothing-item" onclick="selectClothing('${category}', '${item.id}', this)">
           <div class="clothing-image">
@@ -821,32 +842,32 @@
     function selectClothing(category, itemId, element) {
       // Update current outfit
       currentOutfit[category] = itemId;
-      
+
       // Visual feedback
       document.querySelectorAll('.clothing-item').forEach(item => {
         item.classList.remove('selected');
       });
       element.classList.add('selected');
-      
+
       // Update avatar display
       updateOutfitDisplay();
     }
 
     function updateOutfitDisplay() {
       let outfitEmoji = '';
-      
+
       if (currentOutfit.tops) {
         const top = clothingDatabase.tops.find(t => t.id === currentOutfit.tops);
         document.getElementById('outfit-top').textContent = top ? top.name : 'Select a top';
         outfitEmoji += top ? top.emoji : '';
       }
-      
+
       if (currentOutfit.bottoms) {
         const bottom = clothingDatabase.bottoms.find(b => b.id === currentOutfit.bottoms);
         document.getElementById('outfit-bottom').textContent = bottom ? bottom.name : 'Select bottoms';
         outfitEmoji += bottom ? bottom.emoji : '';
       }
-      
+
       if (currentOutfit.shoes) {
         const shoe = clothingDatabase.shoes.find(s => s.id === currentOutfit.shoes);
         document.getElementById('outfit-shoes').textContent = shoe ? shoe.name : 'Select shoes';
@@ -866,7 +887,7 @@
         };
 
         const container = document.getElementById('presetsContainer');
-        container.innerHTML = '';
+        // container.innerHTML = '';
 
         for (const [key, label] of Object.entries(presets)) {
           const btn = document.createElement('button');
@@ -947,7 +968,7 @@
     }
 
     // Initialize
-    loadPresets();
+    // loadPresets();
     renderClothingItems('tops');
     createAvatar();
 
@@ -965,17 +986,17 @@
       const avatar = document.getElementById('avatarPreview');
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      
+
       canvas.width = 400;
       canvas.height = 500;
-      
+
       // Create gradient background
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       gradient.addColorStop(0, '#B76E79');
       gradient.addColorStop(1, '#CD7F32');
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
+
       // Get outfit info
       let outfitText = 'My Dressify Avatar\n\n';
       if (currentOutfit.tops) {
@@ -990,22 +1011,22 @@
         const shoe = clothingDatabase.shoes.find(s => s.id === currentOutfit.shoes);
         outfitText += shoe ? `Shoes: ${shoe.name}\n` : '';
       }
-      
+
       // Draw text
       ctx.fillStyle = 'white';
       ctx.font = 'bold 28px Arial';
       ctx.textAlign = 'center';
       ctx.fillText('Dressify AI Avatar', canvas.width / 2, 80);
-      
+
       ctx.font = '16px Arial';
       ctx.fillText(document.getElementById('avatarName').textContent, canvas.width / 2, 130);
-      
+
       ctx.font = '14px Arial';
       const lines = outfitText.split('\n').filter(l => l.trim());
       lines.forEach((line, i) => {
         ctx.fillText(line, canvas.width / 2, 200 + (i * 30));
       });
-      
+
       // Download
       canvas.toBlob(blob => {
         const url = URL.createObjectURL(blob);
@@ -1020,8 +1041,34 @@
       });
     }
 
-    document.getElementById('analyzeBtn').addEventListener('click', () => {
-      avatarImageInput.click();
+    // document.getElementById('analyzeBtn').addEventListener('click', () => {
+    //   avatarImageInput.click();
+    // });
+
+    // snapchat integration
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const snapName = params.get('name');
+      const snapBitmoji = params.get('bitmoji');
+      const snapId = params.get('externalId');
+
+      if (snapBitmoji) {
+        // 1. Update the Image
+        const img = document.getElementById('userBitmoji');
+        const icon = document.getElementById('placeholderIcon');
+        img.src = snapBitmoji;
+        img.style.display = 'block';
+        if (icon) icon.style.display = 'none';
+
+        // 2. Update the Text
+        document.getElementById('avatarName').textContent = snapName;
+        document.getElementById('externalIdDisplay').textContent = `ID: ${snapId}`;
+
+        // 3. Update the Input Field so it can be saved with the form
+        document.getElementById('avatarNameInput').value = snapName;
+
+        console.log("Snapchat Avatar Integrated!");
+      }
     });
   </script>
   <script src="js/navbar-init.js"></script>
@@ -1033,7 +1080,8 @@
           <a href="index.html">Dressify AI</a>
         </div>
         <p>
-          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by
+          cutting-edge AI.
         </p>
         <ul class="footer__socials">
           <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
@@ -1064,8 +1112,10 @@
         <h4>Join Us</h4>
         <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
         <form style="display: flex; gap: 10px; margin-top: 10px;">
-          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
-          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+          <input type="email" placeholder="Your email"
+            style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn"
+            style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
         </form>
       </div>
     </div>
@@ -1074,4 +1124,5 @@
     </div>
   </footer>
 </body>
+
 </html>

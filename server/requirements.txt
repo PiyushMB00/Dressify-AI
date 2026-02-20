@@ -14,4 +14,4 @@ torch
 diffusers
 transformers
 accelerate
-jwt
+PyJWT
