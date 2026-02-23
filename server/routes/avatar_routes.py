@@ -9,7 +9,10 @@ from flask import Blueprint, request, redirect, session, jsonify
 from urllib.parse import urlencode, quote
 import hashlib, base64
 from flask import url_for, render_template
-from extensions import db
+import urllib.parse
+
+# If you use db from extensions, you can uncomment this line:
+# from extensions import db
 
 avatar_bp = Blueprint("avatar", __name__)
 
@@ -18,6 +21,10 @@ client = InferenceClient(
     model="stabilityai/stable-diffusion-xl-base-1.0",
     token=os.getenv("HF_TOKEN")
 )
+
+CLIENT_ID = os.getenv("SNAP_CLIENT_ID")
+CLIENT_SECRET = os.getenv("SNAP_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("SNAP_REDIRECT_URI")
 
 # ============================================================
 # CREATE AVATAR ROUTE (BACKEND ONLY — Python)
@@ -103,7 +110,7 @@ def snap_login():
 # SNAPCHAT CALLBACK
 # ============================================================
 
-@avatar_bp.route('/callback')
+@avatar_bp.route('/snap/callback')
 def callback():
     code = request.args.get('code')
     token_url = "https://accounts.snapchat.com/accounts/oauth2/token"
@@ -128,4 +135,54 @@ def callback():
     session['snap_user'] = snap_response.get('data', {}).get('me', {})
     
     # REDIRECT back to your main avatar customizer page
-    return redirect('/avatar-customizer.html')
+    return redirect('http://127.0.0.1:3000/avatar-customizer.html')
+
+
+# ============================================================
+# SESSION & LOGOUT MANAGEMENT
+# ============================================================
+
+@avatar_bp.route('/session')
+def get_session():
+    # Return the user data saved during callback as JSON
+    user_data = session.get('snap_user')
+    if user_data:
+        return jsonify({"user": user_data}), 200
+        
+    # Return a 200 OK instead of a 401 so the browser doesn't throw a red error in the console. 
+    return jsonify({"user": None}), 200
+
+@avatar_bp.route('/logout')
+def logout():
+    # 1. Clear your local Flask session
+    session.clear()
+    
+    # 2. Redirect strictly back to your app, NOT to Snapchat's website.
+    # This prevents users from getting stranded on the Snapchat account dashboard!
+    return redirect("http://127.0.0.1:3000/avatar-customizer.html")
+
+# ============================================================
+# OUTFIT SAVING AND LOADING ROUTES
+# ============================================================
+
+@avatar_bp.route('/<user_id>/save-outfit', methods=['POST', 'OPTIONS'])
+def save_outfit(user_id):
+    # Handle the CORS preflight check specifically just in case
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+        
+    data = request.get_json()
+    print(f"✅ Saving outfit for {user_id}: {data}")
+    
+    # TODO: Later, you can add your database saving logic here
+    
+    return jsonify({"message": "Outfit saved successfully!"}), 200
+
+@avatar_bp.route('/<user_id>/outfits', methods=['GET'])
+def load_outfits(user_id):
+    # Mocking saved outfits to send back to the frontend
+    mock_outfits = [
+        {"id": 1, "name": "My Favorite Look", "outfit": {"tops": "t1", "bottoms": "b1", "shoes": "s1"}},
+        {"id": 2, "name": "Casual Sunday", "outfit": {"tops": "t2", "bottoms": "b4", "shoes": "s4"}}
+    ]
+    return jsonify({"outfits": mock_outfits}), 200

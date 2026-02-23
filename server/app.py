@@ -90,12 +90,12 @@ Session(app)
 # -------------------------------
 # CORS Configuration (Required for OAuth + Sessions)
 # -------------------------------
-CORS(
-    app,
-    supports_credentials=True,
-    origins=["http://127.0.0.1:3000"]
-
-)
+CORS(app, 
+     supports_credentials=True, 
+     origins=["http://127.0.0.1:3000"],
+     allow_headers=["Content-Type", "Authorization"],
+     expose_headers=["Content-Type", "Set-Cookie"]
+     )
 
 # -------------------------------
 # Upload Folder

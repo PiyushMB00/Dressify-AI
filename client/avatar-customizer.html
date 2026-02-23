@@ -11,6 +11,9 @@
   <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
   <link rel="stylesheet" href="css/indexstyle.css">
   <style>
+    /* =========================================
+       GLOBAL & RESET
+       ========================================= */
     * {
       margin: 0;
       padding: 0;
@@ -19,11 +22,9 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f8f9fa;
+      background: #f4f6f8;
       color: #333;
     }
-
-
 
     .container {
       max-width: 1200px;
@@ -31,519 +32,449 @@
       padding: 40px 20px;
     }
 
-    .header {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    .header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
-
-    .content {
+    /* =========================================
+       DASHBOARD GRID (The 2x2 Layout)
+       ========================================= */
+    .dashboard-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 30px;
-      margin-bottom: 30px;
+      align-items: stretch;
     }
 
+    /* Mobile Responsive */
+    @media (max-width: 950px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* =========================================
+       CARDS & CONTAINERS
+       ========================================= */
     .card {
-      background: white;
-      border-radius: 15px;
+      background: #ffffff;
+      border-radius: 20px;
       padding: 30px;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #eaeef2;
+      height: 100%;
     }
 
     .card h2 {
-      color: #333;
-      margin-bottom: 20px;
+      color: #1a1a1a;
+      margin-bottom: 25px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-size: 1.3rem;
+      font-weight: 800;
+      border-bottom: 2px solid #f4f6f8;
+      padding-bottom: 15px;
     }
 
     .card h2 ion-icon {
       color: #B76E79;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
     }
 
-    /* Avatar Display */
-    .avatar-display {
+    /* =========================================
+       AVATAR PREVIEW CANVAS (PERFECT FIT MATH)
+       ========================================= */
+    .title-accent {
       text-align: center;
-      padding: 40px;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      border-radius: 15px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #1a1a1a;
       margin-bottom: 20px;
     }
 
-    .avatar-preview-container {
-      /* position: relative;
+    .avatar-stack {
+      position: relative;
       width: 100%;
-      margin-bottom: 15px; */
-      background: radial-gradient(circle, rgba(255, 252, 0, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-      padding: 20px;
+      max-width: 260px;
+      height: 400px; 
+      margin: 0 auto 25px auto;
+      background: radial-gradient(circle at 50% 30%, #ffffff 0%, #e2e8f0 100%);
       border-radius: 20px;
-      margin: 15px 0;
-    }
-
-    .avatar-image {
-      width: 220px !important;
-      height: 220px !important;
-      margin: 0 auto;
-      background: #fff;
-      border: 3px solid #eee;
+      overflow: hidden;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      border: 1px solid #cbd5e1;
+      box-shadow: inset 0 4px 15px rgba(0,0,0,0.05);
     }
 
-    .avatar-image:hover {
-      transform: scale(1.05);
+    /* Head Zone - Height increased to ensure neck is fully visible */
+    .head-crop-zone {
+      width: 100%;
+      height: 155px; 
+      overflow: hidden;
+      position: relative;
+      z-index: 40;
     }
 
-    .avatar-image img {
-      max-height: 90%;
-      width: auto;
+    /* Bitmoji Face */
+    .bitmoji-face {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      width: 145px; 
+      height: auto; 
+      object-fit: contain;
+      transform-origin: top center;
+      transform: translateX(-50%) scale(1.30); 
     }
 
-    .avatar-title {
-      font-size: 1.4rem;
-      color: #333;
-      margin-bottom: 5px;
+    /* Clothing Zone - Pulled up to cover the neck */
+    .clothes-zone {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      margin-top: -24px; 
+      z-index: 20;
     }
 
-    /* Button Organization */
+    .clothing-layer {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      object-fit: contain;
+      pointer-events: none;
+      /* Default shadow, augmented by JS dynamically */
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    /* Mannequin Dummy Body */
+    .dummy-body-ref {
+      top: 5px;
+      width: 95px; 
+      z-index: 5; 
+      opacity: 0.4; 
+      filter: none !important;
+    }
+
+    /* 1. Shirt covers torso and overlaps pants */
+    .shirt-ref {
+      top: -2px;
+      width: 155px; 
+      z-index: 30; 
+    }
+
+    /* 2. Pants tuck under the shirt */
+    .pants-ref {
+      top: 110px; 
+      width: 115px; 
+      z-index: 20; 
+    }
+
+    /* 3. Shoes - CORRECTLY MIRRORED AND FLAT ON THE GROUND */
+    .shoes-ref {
+      top: 215px; /* Safely anchored so legs do not hang in the air */
+      width: 105px; 
+      z-index: 10;
+      display: flex;
+      justify-content: space-between; 
+      align-items: flex-end;
+    }
+
+    .shoe-left, .shoe-right {
+      width: 45%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* ONLY flip the left shoe horizontally! Right shoe stays normal. No more upside down! */
+    .shoe-left {
+      transform: scaleX(-1); 
+    }
+
+    .shoe-right {
+      transform: scaleX(1);
+    }
+
+    /* =========================================
+       INPUTS, FORMS, & BUTTONS
+       ========================================= */
     .avatar-actions {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 15px;
-    }
-
-    .btn-snap {
-      background: #FFFC00 !important;
-      color: #000 !important;
-      border: 2px solid #000 !important;
-    }
-
-    .btn-full {
+      gap: 15px;
       width: 100%;
+      max-width: 260px;
+      margin: 0 auto;
     }
 
-    /* Grid Fixes */
-    .form-grid {
+    .custom-input,
+    .avatar-name-field {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #eaeaea;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      background: #fdfdfd;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .custom-input:focus,
+    .avatar-name-field:focus {
+      border-color: #B76E79;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(183, 110, 121, 0.1);
+    }
+
+    .action-buttons {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 12px;
     }
 
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .empty-msg {
-      color: #999;
-      text-align: center;
-      width: 100%;
-      padding: 20px;
-    }
-
-    .avatar-image.placeholder {
-      background: linear-gradient(135deg, #B76E79 0%, #CD7F32 100%);
-    }
-
-    .avatar-rotation-controls {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 15px;
-    }
-
-    .avatar-rotation-controls button {
-      padding: 10px 20px;
-      border: 2px solid #B76E79;
-      background: white;
-      color: #B76E79;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .avatar-rotation-controls button:hover {
-      background: #B76E79;
-      color: white;
-      transform: translateY(-2px);
-    }
-
-    .avatar-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .avatar-image.placeholder {
-      background: #ddd;
-      color: #999;
-      font-size: 3rem;
-    }
-
-    .current-outfit {
-      background: #f8f9ff;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-
-    .outfit-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .outfit-item:last-child {
-      border-bottom: none;
-    }
-
-    .outfit-label {
-      font-weight: 600;
-      color: #B76E79;
-    }
-
-    .outfit-value {
-      color: #666;
-    }
-
-    /* Form Section */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 600;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-family: 'Poppins', sans-serif;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #B76E79;
-    }
-
-    /* Upload Area */
-    .upload-area {
-      border: 3px dashed #B76E79;
+    /* Premium Modern Buttons */
+    .btn-snap-styled {
+      padding: 14px 10px;
       border-radius: 10px;
-      padding: 30px;
-      text-align: center;
+      font-weight: 700;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-bottom: 15px;
-    }
-
-    .upload-area:hover {
-      background: #f8f9ff;
-      border-color: #CD7F32;
-    }
-
-    .upload-area.active {
-      background: #f0f4ff;
-      border-color: #B76E79;
-    }
-
-    .upload-area ion-icon {
-      font-size: 2rem;
-      color: #B76E79;
-      margin-bottom: 10px;
-    }
-
-    .upload-area p {
-      color: #666;
-    }
-
-    #avatarImage {
-      display: none;
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 12px 24px;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.3s;
-      display: inline-flex;
+      background: #FFFC00;
+      color: #111;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(255, 252, 0, 0.3);
+    }
+
+    .btn-snap-styled:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(255, 252, 0, 0.4);
+    }
+    
+    .btn-snap-styled:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(255, 252, 0, 0.2);
+    }
+
+    .black-btn {
+      background: #1a1a1a;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .black-btn:hover {
+      background: #000;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #B76E79 0%, #CD7F32 100%);
       color: white;
       width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3);
     }
 
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-      margin-right: 10px;
+    /* =========================================
+       BITMOJI CLOSET & WARDROBE
+       ========================================= */
+    .wardrobe-header {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    .btn-secondary:hover {
-      background: #e0e0e0;
+    .category-tabs {
+      display: flex;
+      background: #f0f2f5;
+      padding: 6px;
+      border-radius: 12px;
+      margin-bottom: 15px;
     }
 
-    /* Presets */
-    .presets {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .preset-btn {
+    .tab-item {
+      flex: 1;
+      border: none;
+      background: transparent;
       padding: 10px;
-      border: 2px solid #e0e0e0;
-      background: white;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 600;
-      text-transform: capitalize;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      transition: all 0.2s ease;
     }
 
-    .preset-btn:hover {
-      border-color: #B76E79;
-      background: #f8f9ff;
+    .tab-item.active {
+      background: white;
+      color: #1a1a1a;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     }
 
-    .preset-btn.active {
-      background: #B76E79;
-      color: white;
-      border-color: #B76E79;
-    }
-
-    /* Clothing Options */
-    .clothing-section {
-      background: #f8f9ff;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-
-    .clothing-section h3 {
-      color: #B76E79;
-      margin-bottom: 15px;
-      font-size: 1rem;
-    }
-
-    .clothing-grid {
+    .snap-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 5px 10px 10px 5px;
+    }
+
+    .snap-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .snap-grid::-webkit-scrollbar-thumb {
+      background: #dcdde1;
+      border-radius: 10px;
+    }
+
+    .wardrobe-item {
+      aspect-ratio: 1/1;
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 15px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .wardrobe-item img {
+      width: 85%;
+      height: 85%;
+      object-fit: contain;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .wardrobe-item:hover {
+      background: #f1f2f6;
+      border-color: #e1e4e8;
+    }
+
+    .wardrobe-item:hover img {
+      transform: scale(1.15);
+    }
+
+    .wardrobe-item.selected {
+      border-color: #FFFC00;
+      background: #fffdf0;
+      box-shadow: 0 4px 12px rgba(255, 252, 0, 0.15);
+    }
+
+    /* =========================================
+       CUSTOMIZATION & UPLOAD SECTION
+       ========================================= */
+    .form-grid {
+      display: flex;
+      flex-direction: column;
       gap: 15px;
       margin-bottom: 20px;
     }
 
-    .clothing-item {
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      padding: 10px;
-      cursor: pointer;
-      transition: all 0.3s;
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .upload-area {
+      border: 2px dashed #B76E79;
+      border-radius: 12px;
+      padding: 30px 20px;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #fffbfa;
     }
 
-    .clothing-item:hover {
-      border-color: #B76E79;
-      transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+    .upload-area:hover {
+      background: #fff5f5;
+      border-color: #CD7F32;
     }
 
-    .clothing-item.selected {
-      background: #B76E79;
-      color: white;
-      border-color: #B76E79;
-    }
-
-    .clothing-image {
-      width: 100%;
-      height: 120px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .upload-area ion-icon {
+      font-size: 2.5rem;
+      color: #B76E79;
       margin-bottom: 10px;
-      font-size: 2rem;
-      overflow: hidden;
     }
 
-    .clothing-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 6px;
-      transition: transform 0.3s;
-    }
-
-    .clothing-item:hover .clothing-image img {
-      transform: scale(1.1);
-    }
-
-    .clothing-name {
+    .upload-area p {
+      color: #7f8c8d;
       font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 5px;
+      font-size: 0.95rem;
     }
 
-    .clothing-color {
-      font-size: 0.8rem;
-      color: #999;
+    /* =========================================
+       LOOKBOOK & MESSAGES
+       ========================================= */
+    .empty-msg {
+      color: #95a5a6;
+      text-align: center;
+      padding: 40px 20px;
+      font-style: italic;
+      background: #f8f9fa;
+      border-radius: 12px;
+      border: 1px dashed #dcdde1;
     }
 
-    .tabs {
+    .lookbook-display {
+      flex: 1;
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #e0e0e0;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    .tab {
-      padding: 10px 20px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-      color: #999;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s;
-    }
-
-    .tab.active {
-      color: #B76E79;
-      border-bottom-color: #B76E79;
-    }
-
-    /* Saved Outfits */
-    .saved-outfits {
-      background: white;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-      margin-bottom: 30px;
-    }
-
-    .saved-outfits h2 {
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    .outfit-card {
-      background: #f8f9ff;
-      border-left: 4px solid #B76E79;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .outfit-info h4 {
-      color: #B76E79;
-      margin-bottom: 5px;
-    }
-
-    .outfit-info p {
-      color: #666;
-      font-size: 0.9rem;
-    }
-
-    .outfit-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .outfit-actions button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
-    .btn-load {
-      background: #B76E79;
-      color: white;
-    }
-
-    .btn-delete {
-      background: #ff6b6b;
-      color: white;
-    }
-
-    /* Messages */
     .message {
       padding: 15px;
-      border-radius: 8px;
+      border-radius: 10px;
       margin-bottom: 15px;
+      font-weight: 600;
+      font-size: 0.9rem;
       display: none;
     }
 
     .message.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background: #e8f8f5;
+      color: #27ae60;
+      border: 1px solid #c8e6c9;
       display: block;
     }
 
     .message.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background: #fdfeff;
+      color: #e74c3c;
+      border: 1px solid #fadbd8;
       display: block;
     }
 
-    @media (max-width: 768px) {
-      .content {
-        grid-template-columns: 1fr;
-      }
+    /* Animation - Preserves scale during pop-in */
+    .reflect-anim {
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
-      .presets {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .header h1 {
-        font-size: 1.8rem;
-      }
+    @keyframes popIn {
+      0% { transform: translateX(-50%) scale(1.1); opacity: 0.5; }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -579,120 +510,111 @@
     </div>
   </nav>
 
-  <section class="hero">
+  <section class="hero" style="text-align: center; padding: 40px 20px; background: #fff; margin-bottom: 20px; border-bottom: 1px solid #eee;">
     <div class="hero-container">
-      <h1>👤 Dressify AI Avatar Creator</h1>
-      <p>Customize your 3D avatar and try on different outfits</p>
+      <h1 style="font-size: 2.5rem; color: #1a1a1a; font-weight: 800; margin-bottom: 10px;">👤 Dressify AI Avatar Creator</h1>
+      <p style="color: #7f8c8d; font-size: 1.1rem; font-weight: 500;">Customize your 3D avatar and try on different outfits</p>
     </div>
   </section>
 
+  <!-- PROFESSIONAL DASHBOARD LAYOUT -->
   <div class="container">
-    <div class="content">
-
-      <div class="card avatar-card">
-        <h2><ion-icon name="person-circle-outline"></ion-icon> Your Avatar</h2>
-
-        <div class="avatar-display">
-          <div id="avatarName" class="avatar-title"
-            style="font-weight: 700; margin-bottom: 15px; font-size: 1.2rem; color: #B76E79;">
-            {% if session.get('snap_user') %}
-            {{ session['snap_user'].displayName }}
-            {% else %}
-            My Avatar
-            {% endif %}
+    <div class="dashboard-grid">
+      
+      <!-- 1. TOP LEFT: Avatar Card -->
+      <div class="card editor-card avatar-card">
+        <h2 id="displayNameArea" class="title-accent">Guest User</h2>
+        <div class="avatar-stack" id="avatarPreviewBox">
+          <div class="head-crop-zone">
+            <!-- Default placeholder will be updated by JS if logged in -->
+            <img id="userBitmoji" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Guest&backgroundColor=b6e3f4" class="bitmoji-face">
           </div>
-
-          <div class="avatar-preview-container"
-            style="background: radial-gradient(circle, rgba(255, 252, 0, 0.1) 0%, rgba(255, 255, 255, 0) 70%); padding: 20px; border-radius: 20px;">
-            <div class="avatar-image" id="avatarPreview"
-              style="width: 200px; height: 200px; margin: 0 auto; background: #fff; border: 3px solid #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 15px;">
-              {% if session.get('snap_user') %}
-              <img id="userBitmoji" src="{{ session['snap_user'].bitmoji.avatar }}" alt="Bitmoji"
-                style="max-height: 100%; width: auto; display: block;">
-              {% else %}
-              <div class="placeholder-content" style="text-align: center; color: #999;">
-                <ion-icon name="person" style="font-size: 4rem;"></ion-icon>
-                <p style="font-size: 0.8rem; margin-top: 5px;">No Avatar Linked</p>
-              </div>
-              {% endif %}
+          <div class="clothes-zone">
+            <!-- SLEEK MANNEQUIN BODY - Legs shortened so they don't poke past the raised shoes -->
+            <img id="dummyBody" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 350'><rect x='45' y='0' width='30' height='40' rx='10' fill='%23cbd5e1'/><path d='M30 30 Q60 15 90 30 L80 180 L40 180 Z' fill='%2394a3b8'/><rect x='40' y='170' width='16' height='110' rx='8' fill='%23cbd5e1'/><rect x='64' y='170' width='16' height='110' rx='8' fill='%23cbd5e1'/></svg>" class="clothing-layer dummy-body-ref">
+            
+            <img id="reflectTop" src="" class="clothing-layer shirt-ref" style="display:none;">
+            <img id="reflectBottom" src="" class="clothing-layer pants-ref" style="display:none;">
+            
+            <!-- MIRRORED SHOE CONTAINER -->
+            <div id="reflectShoes" class="clothing-layer shoes-ref" style="display:none;">
+                <img class="shoe-left" src="">
+                <img class="shoe-right" src="">
             </div>
           </div>
+        </div>
 
-          <div class="avatar-actions" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-            {% if not session.get('snap_user') %}
-            <button class="btn btn-snap" id="snapLoginBtn" onclick="startSnapLogin()"
-              style="background: #FFFC00 !important; color: #000 !important; border: 2px solid #000 !important; width: 100%;">
-              <ion-icon name="logo-snapchat"></ion-icon>
-              <span>Link Bitmoji</span>
+        <div class="avatar-actions">
+          <input type="text" id="avatarNameInput" class="avatar-name-field" placeholder="Enter Avatar Name...">
+          
+          <div class="action-buttons">
+            <button class="btn-snap-styled black-btn" onclick="createAvatar()">Save Name</button>
+            <button class="btn-snap-styled" onclick="saveCurrentOutfit()">
+              <ion-icon name="save-outline" style="font-size: 1.1rem;"></ion-icon> Save Outfit
             </button>
-            {% else %}
-            <a href="/api/avatar/logout" class="btn btn-secondary" style="width: 100%; font-size: 0.9rem;">
-              <ion-icon name="log-out-outline"></ion-icon> Unlink Snap
-            </a>
-            {% endif %}
-
-            <button class="btn btn-primary" onclick="saveCurrentOutfit()" style="width: 100%;">
-              <ion-icon name="save-outline"></ion-icon> Save Outfit
+            
+            <!-- Dynamic Login/Logout Buttons -->
+            <button class="btn-snap-styled" id="loginBtn" onclick="startSnapLogin()">
+              <ion-icon name="logo-snapchat"></ion-icon> Connect Snapchat
+            </button>
+            <button class="btn btn-secondary" id="logoutBtn" onclick="logoutAndSwitch()" style="display:none; padding: 8px 15px; border-radius: 8px; border: none; background: #eee; cursor:pointer;">
+              <ion-icon name="log-out-outline"></ion-icon> Switch User / Logout
             </button>
           </div>
+
         </div>
       </div>
 
-      <div class="card">
+      <!-- 2. TOP RIGHT: Bitmoji Closet -->
+      <div class="card editor-card wardrobe-container">
+        <div class="wardrobe-header">
+          <h2><ion-icon name="shirt-outline"></ion-icon> Bitmoji Closet</h2>
+          <div class="category-tabs">
+            <button class="tab-item active" onclick="changeCategory('tops', this)">Tops</button>
+            <button class="tab-item" onclick="changeCategory('bottoms', this)">Bottoms</button>
+            <button class="tab-item" onclick="changeCategory('shoes', this)">Shoes</button>
+          </div>
+        </div>
+        <div id="wardrobeGrid" class="snap-grid">
+          <!-- Items populated by JS -->
+        </div>
+      </div>
+
+      <!-- 3. BOTTOM LEFT: Customization Card -->
+      <div class="card settings-card customization-card">
         <h2><ion-icon name="color-palette-outline"></ion-icon> Customization</h2>
         <div id="messageBox"></div>
-
-        <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div class="form-grid">
           <div class="form-group">
-            <label for="avatarNameInput">Display Name</label>
-            <input type="text" id="avatarNameInput" placeholder="Name..."
-              value="{{ session['snap_user'].displayName if session.get('snap_user') else 'My Fashion Avatar' }}">
-          </div>
-
-          <div class="form-group">
-            <label for="skinTone">Skin Tone</label>
-            <select id="skinTone">
+            <label>Skin Tone</label>
+            <select id="skinTone" class="custom-input">
               <option value="light">Light</option>
               <option value="medium" selected>Medium</option>
               <option value="dark">Dark</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label>Physical Reference</label>
-          <div class="upload-area" id="uploadArea" onclick="document.getElementById('avatarImage').click()">
-            <ion-icon name="cloud-upload-outline"></ion-icon>
-            <p>Click to upload reference</p>
+          <div class="form-group">
+            <label>Reference Image</label>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('avatarImage').click()">
+              <ion-icon name="cloud-upload-outline"></ion-icon>
+              <p>Click to upload reference</p>
+            </div>
+            <input type="file" id="avatarImage" accept="image/*" style="display:none;">
           </div>
-          <input type="file" id="avatarImage" accept="image/*" style="display:none;">
         </div>
-
-        <button class="btn btn-primary" onclick="createAvatar()" style="width: 100%;">
+        <button class="btn btn-primary" onclick="createAvatar()">
           Update Profile
         </button>
       </div>
-    </div>
 
-    <div class="card clothing-card" style="margin-top: 30px;">
-      <div class="card-header"
-        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-        <h2><ion-icon name="shirt-outline"></ion-icon> Closet Customizer</h2>
-        <div class="tabs" style="border-bottom: none;">
-          <button class="tab active" onclick="switchTab('tops', this)">Tops</button>
-          <button class="tab" onclick="switchTab('bottoms', this)">Bottoms</button>
-          <button class="tab" onclick="switchTab('shoes', this)">Shoes</button>
-          <button class="tab" onclick="switchTab('accessories', this)">Jewelry</button>
+      <!-- 4. BOTTOM RIGHT: Saved Lookbook -->
+      <div class="card settings-card saved-outfits">
+        <h2><ion-icon name="bookmark-outline"></ion-icon> Saved Lookbook</h2>
+        <div id="savedOutfitsContainer" class="lookbook-display">
+          <p class="empty-msg">Your saved styles will appear here.</p>
         </div>
       </div>
-      <div id="clothingItems" class="clothing-grid"></div>
-    </div>
 
-    <div class="saved-outfits card" style="margin-top: 30px;">
-      <h2><ion-icon name="bookmark-outline"></ion-icon> Saved Lookbook</h2>
-      <div id="savedOutfitsContainer">
-        <p style="color: #999; text-align: center; padding: 20px;">Your saved styles will appear here.</p>
-      </div>
     </div>
   </div>
 
@@ -702,81 +624,104 @@
     axios.defaults.withCredentials = true;
     const userId = 'user_' + Date.now();
     let currentAvatar = null;
-    let currentOutfit = {};
     let currentTab = 'tops';
 
-    // Clothing database with images
+    let currentOutfit = {
+      tops: null,
+      bottoms: null,
+      shoes: null
+    };
+
+    // =========================================================================
+    // 100% BULLETPROOF DATABASE 
+    // We only request the 10 absolute base images we KNOW work on the server.
+    // Then, we use CSS Filters to instantly dye them into 30 unique designer items!
+    // =========================================================================
+    const baseIcons = {
+        tee: 'https://img.icons8.com/color/96/t-shirt.png',
+        hoodie: 'https://img.icons8.com/color/96/hoodie.png',
+        jacket: 'https://img.icons8.com/color/96/jacket.png',
+        sweater: 'https://img.icons8.com/color/96/sweater.png',
+        jeans: 'https://img.icons8.com/color/96/jeans.png',
+        trousers: 'https://img.icons8.com/color/96/trousers.png',
+        shorts: 'https://img.icons8.com/color/96/shorts.png',
+        sweatpants: 'https://img.icons8.com/color/96/sweatpants.png',
+        sneaker: 'https://img.icons8.com/color/96/sneakers.png',
+        shoe: 'https://img.icons8.com/color/96/mens-shoe.png'
+    };
+
     const clothingDatabase = {
       tops: [
-        { id: 't1', name: 'Blue Shirt', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop', color: '#2563eb' },
-        { id: 't2', name: 'Red Shirt', image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=400&fit=crop', color: '#dc2626' },
-        { id: 't3', name: 'Green Shirt', image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=400&h=400&fit=crop', color: '#16a34a' },
-        { id: 't4', name: 'White Shirt', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop', color: '#f5f5f5' },
-        { id: 't5', name: 'Black Shirt', image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&h=400&fit=crop', color: '#1f2937' },
-        { id: 't6', name: 'Purple Shirt', image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop', color: '#9333ea' },
-        { id: 't7', name: 'Yellow Shirt', image: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop', color: '#fbbf24' },
-        { id: 't8', name: 'Pink Shirt', image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=400&h=400&fit=crop', color: '#ec4899' },
+        { id: 't1', name: 'Classic Green Tee', image: baseIcons.tee, filter: 'none' },
+        { id: 't2', name: 'Midnight Black Tee', image: baseIcons.tee, filter: 'grayscale(100%) brightness(30%)' },
+        { id: 't3', name: 'Grey Urban Hoodie', image: baseIcons.hoodie, filter: 'grayscale(100%) brightness(130%)' },
+        { id: 't4', name: 'Crimson Red Hoodie', image: baseIcons.hoodie, filter: 'hue-rotate(150deg) saturate(150%)' },
+        { id: 't5', name: 'Blue Denim Jacket', image: baseIcons.jacket, filter: 'none' },
+        { id: 't6', name: 'Dark Leather Jacket', image: baseIcons.jacket, filter: 'grayscale(100%) brightness(40%)' },
+        { id: 't7', name: 'Mustard Knit Sweater', image: baseIcons.sweater, filter: 'hue-rotate(320deg) saturate(150%) brightness(110%)' },
+        { id: 't8', name: 'Plum Violet Sweater', image: baseIcons.sweater, filter: 'hue-rotate(200deg) saturate(120%)' },
+        { id: 't9', name: 'White Graphic Tee', image: baseIcons.tee, filter: 'grayscale(100%) brightness(250%)' },
+        { id: 't10', name: 'Neon Pink Hoodie', image: baseIcons.hoodie, filter: 'hue-rotate(280deg) saturate(200%) brightness(120%)' }
       ],
       bottoms: [
-        { id: 'b1', name: 'Blue Jeans', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=400&fit=crop', color: '#1e40af' },
-        { id: 'b2', name: 'Black Jeans', image: 'https://images.unsplash.com/photo-1542272604-787c62e4a69f?w=400&h=400&fit=crop', color: '#000000' },
-        { id: 'b3', name: 'Khaki Pants', image: 'https://images.unsplash.com/photo-1473966968600-fa804b86820b?w=400&h=400&fit=crop', color: '#d4a373' },
-        { id: 'b4', name: 'Red Pants', image: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&h=400&fit=crop', color: '#991b1b' },
-        { id: 'b5', name: 'White Pants', image: 'https://images.unsplash.com/photo-1582533031735-309196b0521e?w=400&h=400&fit=crop', color: '#ffffff' },
-        { id: 'b6', name: 'Gray Pants', image: 'https://images.unsplash.com/photo-1624371414361-e6e8ea303494?w=400&h=400&fit=crop', color: '#6b7280' },
-        { id: 'b7', name: 'Green Pants', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=400&fit=crop', color: '#15803d' },
-        { id: 'b8', name: 'Brown Pants', image: 'https://images.unsplash.com/photo-1551839066-cd9748202242?w=400&h=400&fit=crop', color: '#7c2d12' },
+        { id: 'b1', name: 'Classic Blue Jeans', image: baseIcons.jeans, filter: 'none' },
+        { id: 'b2', name: 'Faded Grey Jeans', image: baseIcons.jeans, filter: 'grayscale(100%) brightness(120%)' },
+        { id: 'b3', name: 'Black Tailored Trousers', image: baseIcons.trousers, filter: 'grayscale(100%) brightness(30%)' },
+        { id: 'b4', name: 'Navy Dress Pants', image: baseIcons.trousers, filter: 'hue-rotate(200deg) saturate(80%) brightness(60%)' },
+        { id: 'b5', name: 'Khaki Summer Shorts', image: baseIcons.shorts, filter: 'sepia(100%) hue-rotate(350deg) saturate(150%) brightness(90%)' },
+        { id: 'b6', name: 'Coral Beach Shorts', image: baseIcons.shorts, filter: 'hue-rotate(120deg) saturate(150%) brightness(110%)' },
+        { id: 'b7', name: 'Heather Grey Sweats', image: baseIcons.sweatpants, filter: 'none' },
+        { id: 'b8', name: 'Maroon Track Pants', image: baseIcons.sweatpants, filter: 'hue-rotate(140deg) saturate(120%) brightness(80%)' },
+        { id: 'b9', name: 'Dark Wash Denim', image: baseIcons.jeans, filter: 'brightness(60%) saturate(120%)' },
+        { id: 'b10', name: 'Olive Tech Cargos', image: baseIcons.trousers, filter: 'sepia(100%) hue-rotate(50deg) saturate(120%) brightness(70%)' }
       ],
       shoes: [
-        { id: 's1', name: 'Black Shoes', image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop', color: '#000000' },
-        { id: 's2', name: 'White Sneakers', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop', color: '#ffffff' },
-        { id: 's3', name: 'Red Heels', image: 'https://images.unsplash.com/photo-1543163521-145468177d73?w=400&h=400&fit=crop', color: '#dc2626' },
-        { id: 's4', name: 'Blue Shoes', image: 'https://images.unsplash.com/photo-1520639889426-ce7464a4b88d?w=400&h=400&fit=crop', color: '#2563eb' },
-        { id: 's5', name: 'Brown Boots', image: 'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=400&h=400&fit=crop', color: '#92400e' },
-        { id: 's6', name: 'Golden Heels', image: 'https://images.unsplash.com/photo-1573113635489-d81e71bb7fb6?w=400&h=400&fit=crop', color: '#fbbf24' },
-        { id: 's7', name: 'Purple Shoes', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop', color: '#6d28d9' },
-        { id: 's8', name: 'Green Sneakers', image: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&h=400&fit=crop', color: '#059669' },
-      ],
-      accessories: [
-        { id: 'a1', name: 'Gold Watch', image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400&h=400&fit=crop', color: '#fbbf24' },
-        { id: 'a2', name: 'Silver Necklace', image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop', color: '#c0c0c0' },
-        { id: 'a3', name: 'Black Hat', image: 'https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?w=400&h=400&fit=crop', color: '#000000' },
-        { id: 'a4', name: 'Red Bag', image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop', color: '#dc2626' },
-        { id: 'a5', name: 'Blue Scarf', image: 'https://images.unsplash.com/photo-1620641120014-067df146522c?w=400&h=400&fit=crop', color: '#2563eb' },
-        { id: 'a6', name: 'Sunglasses', image: 'https://images.unsplash.com/photo-1511499767010-a7839678cc06?w=400&h=400&fit=crop', color: '#1f2937' },
-        { id: 'a7', name: 'Gold Ring', image: 'https://images.unsplash.com/photo-1605100804763-047af5f6f28a?w=400&h=400&fit=crop', color: '#fbbf24' },
-        { id: 'a8', name: 'Leather Belt', image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop', color: '#92400e' },
+        { id: 's1', name: 'White High-Tops', image: baseIcons.sneaker, filter: 'grayscale(100%) brightness(200%)' },
+        { id: 's2', name: 'Black Skater Shoes', image: baseIcons.sneaker, filter: 'grayscale(100%) brightness(30%)' },
+        { id: 's3', name: 'Hype Red Kicks', image: baseIcons.sneaker, filter: 'hue-rotate(140deg) saturate(150%)' },
+        { id: 's4', name: 'Brown Oxfords', image: baseIcons.shoe, filter: 'sepia(80%) hue-rotate(340deg) brightness(80%)' },
+        { id: 's5', name: 'Black Dress Shoes', image: baseIcons.shoe, filter: 'grayscale(100%) brightness(30%)' },
+        { id: 's6', name: 'Neon Green Runners', image: baseIcons.sneaker, filter: 'hue-rotate(260deg) saturate(200%)' },
+        { id: 's7', name: 'Navy Slip-ons', image: baseIcons.shoe, filter: 'hue-rotate(200deg) saturate(120%) brightness(70%)' },
+        { id: 's8', name: 'Vintage Yellow Kicks', image: baseIcons.sneaker, filter: 'hue-rotate(320deg) saturate(150%) brightness(110%)' },
+        { id: 's9', name: 'Cherry Loafers', image: baseIcons.shoe, filter: 'hue-rotate(140deg) saturate(120%) brightness(60%)' },
+        { id: 's10', name: 'Violet Trainers', image: baseIcons.sneaker, filter: 'hue-rotate(200deg) saturate(150%)' }
       ]
     };
 
-    // Drag & drop for image
     const uploadArea = document.getElementById('uploadArea');
     const avatarImageInput = document.getElementById('avatarImage');
 
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.classList.add('active');
-    });
+    if (uploadArea) {
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('active');
+      });
 
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.classList.remove('active');
-    });
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('active');
+      });
 
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.classList.remove('active');
-      avatarImageInput.files = e.dataTransfer.files;
-      previewImage();
-    });
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('active');
+        if (avatarImageInput) {
+          avatarImageInput.files = e.dataTransfer.files;
+          previewImage();
+        }
+      });
+    }
 
-    avatarImageInput.addEventListener('change', previewImage);
+    if (avatarImageInput) {
+      avatarImageInput.addEventListener('change', previewImage);
+    }
 
     function previewImage() {
       const file = avatarImageInput.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          document.getElementById('avatarPreview').innerHTML = `<img src="${e.target.result}" alt="avatar">`;
+          // Future avatar preview logic
         };
         reader.readAsDataURL(file);
       }
@@ -791,130 +736,155 @@
       }, 3000);
     }
 
-    async function createAvatar() {
-      const response = await fetch("http://127.0.0.1:8000/api/avatar/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          name: document.getElementById("avatarNameInput").value
-        })
-      });
+    const startSnapLogin = () => {
+      // Directs to Flask OAuth Route
+      window.location.href = "http://127.0.0.1:8000/api/avatar/snap/login";
+    };
 
-      const data = await response.json();
-      console.log(data);
+    async function loadSnapProfile() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/avatar/session', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+
+        const baseImg = document.getElementById('userBitmoji');
+        const displayNameArea = document.getElementById('displayNameArea');
+        const avatarNameInput = document.getElementById('avatarNameInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (data.user) {
+          // Logged In State
+          if (baseImg && data.user.bitmoji && data.user.bitmoji.avatar) {
+            baseImg.src = data.user.bitmoji.avatar;
+            baseImg.style.display = 'block';
+          }
+          
+          displayNameArea.textContent = data.user.displayName || "Snapchat User";
+          avatarNameInput.value = data.user.displayName || "";
+          
+          loginBtn.style.display = 'none';
+          logoutBtn.style.display = 'flex'; 
+        } else {
+          // Guest State
+          displayNameArea.textContent = "Guest User";
+          if (baseImg) {
+            baseImg.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=Guest&backgroundColor=b6e3f4";
+          }
+          loginBtn.style.display = 'flex';
+          logoutBtn.style.display = 'none';
+        }
+      } catch (err) {
+        console.error("Session failed:", err);
+        // Fallback to Guest State on error
+        document.getElementById('displayNameArea').textContent = "Guest User";
+        document.getElementById('loginBtn').style.display = 'flex';
+        document.getElementById('logoutBtn').style.display = 'none';
+      }
     }
 
+    window.addEventListener('DOMContentLoaded', loadSnapProfile);
 
-    function startSnapLogin() {
-      window.location.assign(`${API_URL}/avatar/snap/login`);
-    }
-
-
-    function switchTab(category, el) {
-      currentTab = category;
-
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-
-      if (el) el.classList.add('active');
-
+    function changeCategory(category, element) {
+      document.querySelectorAll('.tab-item').forEach(btn => btn.classList.remove('active'));
+      element.classList.add('active');
       renderClothingItems(category);
     }
 
+    const baseDropShadow = 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))';
 
     function renderClothingItems(category) {
+      const container = document.getElementById('wardrobeGrid');
       const items = clothingDatabase[category] || [];
-      const container = document.getElementById('clothingItems');
 
-      container.innerHTML = items.map(item => `
-        <div class="clothing-item" onclick="selectClothing('${category}', '${item.id}', this)">
-          <div class="clothing-image">
-            <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect fill=%22%23f0f0f0%22 width=%22120%22 height=%22120%22/%3E%3C/svg%3E'" />
-          </div>
-          <div class="clothing-name">${item.name}</div>
-          <div class="clothing-color" style="background-color: ${item.color};"></div>
+      if (items.length === 0) {
+        container.innerHTML = `<div class="empty-msg" style="grid-column: 1/-1;">Coming soon to ${category}!</div>`;
+        return;
+      }
+
+      container.innerHTML = items.map(item => {
+        // Apply the CSS filter directly in the grid so users can see the color changes!
+        const appliedFilter = item.filter !== 'none' ? `${item.filter} ${baseDropShadow}` : baseDropShadow;
+        return `
+        <div class="wardrobe-item ${currentOutfit[category] === item.id ? 'selected' : ''}" 
+             onclick="selectItem('${category}', '${item.id}', this)">
+            <img src="${item.image}" alt="${item.name}" title="${item.name}" style="filter: ${appliedFilter};">
         </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    function selectClothing(category, itemId, element) {
-      // Update current outfit
-      currentOutfit[category] = itemId;
+    function selectItem(category, itemId, element) {
+      const itemData = clothingDatabase[category].find(i => i.id === itemId);
+      if (!itemData) return;
 
-      // Visual feedback
-      document.querySelectorAll('.clothing-item').forEach(item => {
-        item.classList.remove('selected');
-      });
-      element.classList.add('selected');
+      const layerMap = {
+        'tops': 'reflectTop',
+        'bottoms': 'reflectBottom',
+        'shoes': 'reflectShoes'
+      };
 
-      // Update avatar display
-      updateOutfitDisplay();
-    }
+      const targetImg = document.getElementById(layerMap[category]);
 
-    function updateOutfitDisplay() {
-      let outfitEmoji = '';
+      if (targetImg) {
+        // Construct the final filter string
+        const appliedFilter = itemData.filter !== 'none' ? `${itemData.filter} ${baseDropShadow}` : baseDropShadow;
 
-      if (currentOutfit.tops) {
-        const top = clothingDatabase.tops.find(t => t.id === currentOutfit.tops);
-        document.getElementById('outfit-top').textContent = top ? top.name : 'Select a top';
-        outfitEmoji += top ? top.emoji : '';
-      }
-
-      if (currentOutfit.bottoms) {
-        const bottom = clothingDatabase.bottoms.find(b => b.id === currentOutfit.bottoms);
-        document.getElementById('outfit-bottom').textContent = bottom ? bottom.name : 'Select bottoms';
-        outfitEmoji += bottom ? bottom.emoji : '';
-      }
-
-      if (currentOutfit.shoes) {
-        const shoe = clothingDatabase.shoes.find(s => s.id === currentOutfit.shoes);
-        document.getElementById('outfit-shoes').textContent = shoe ? shoe.name : 'Select shoes';
-        outfitEmoji += shoe ? shoe.emoji : '';
-      }
-    }
-
-    async function loadPresets() {
-      try {
-        const presets = {
-          casual: 'Casual',
-          formal: 'Formal',
-          sporty: 'Sporty',
-          traditional: 'Traditional',
-          beach: 'Beach',
-          party: 'Party'
-        };
-
-        const container = document.getElementById('presetsContainer');
-        // container.innerHTML = '';
-
-        for (const [key, label] of Object.entries(presets)) {
-          const btn = document.createElement('button');
-          btn.className = 'preset-btn';
-          btn.textContent = label;
-          btn.onclick = () => applyPreset(key);
-          container.appendChild(btn);
+        if (category === 'shoes') {
+            targetImg.querySelector('.shoe-left').src = itemData.image;
+            targetImg.querySelector('.shoe-right').src = itemData.image;
+            
+            // Apply the color filter to both left and right shoes!
+            targetImg.querySelector('.shoe-left').style.filter = appliedFilter;
+            targetImg.querySelector('.shoe-right').style.filter = appliedFilter;
+            targetImg.style.display = 'flex';
+        } else {
+            targetImg.src = itemData.image;
+            targetImg.style.filter = appliedFilter;
+            targetImg.style.display = 'block';
         }
-      } catch (error) {
-        console.error('Error loading presets:', error);
+        
+        targetImg.classList.remove('reflect-anim');
+        void targetImg.offsetWidth; // Trigger reflow
+        targetImg.classList.add('reflect-anim');
+        
+        currentOutfit[category] = itemId;
       }
+      
+      const allItems = element.parentElement.querySelectorAll('.wardrobe-item');
+      allItems.forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
     }
 
-    async function applyPreset(preset) {
+    async function createAvatar() {
+      const nameField = document.getElementById("avatarNameInput");
+      const nameValue = nameField ? nameField.value.trim() : "";
+
+      if (!nameValue) {
+        alert("Please enter a name for your avatar first!");
+        return;
+      }
+
       try {
-        const response = await fetch(`${API_URL}/avatar/${userId}/preset/${preset}`, {
-          method: 'POST'
+        const response = await fetch("http://127.0.0.1:8000/api/avatar/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify({ "name": nameValue })
         });
 
         const data = await response.json();
+
         if (response.ok) {
-          currentAvatar = data.avatar;
-          updateOutfitDisplay();
-          showMessage(`${preset} style applied!`, 'success');
+          alert("Avatar Profile Saved!");
+        } else {
+          console.error("Server Error:", data);
         }
-      } catch (error) {
-        showMessage('Error applying preset', 'error');
+      } catch (err) {
+        console.error("Network Error:", err);
       }
     }
 
@@ -925,11 +895,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             outfitName: 'Outfit ' + new Date().toLocaleDateString(),
-            outfit: currentAvatar.currentOutfit
+            outfit: currentOutfit
           })
         });
 
-        const data = await response.json();
         if (response.ok) {
           showMessage('Outfit saved successfully!', 'success');
           loadSavedOutfits();
@@ -947,14 +916,9 @@
         const container = document.getElementById('savedOutfitsContainer');
         if (data.outfits && data.outfits.length > 0) {
           container.innerHTML = data.outfits.map(outfit => `
-            <div class="outfit-card">
-              <div class="outfit-info">
-                <h4>${outfit.name}</h4>
-                <p>Top: ${outfit.outfit.top} | Bottom: ${outfit.outfit.bottom}</p>
-              </div>
-              <div class="outfit-actions">
-                <button class="btn-load" onclick="loadOutfit(${outfit.id})">Load</button>
-              </div>
+            <div style="background: #f4f6f8; border-left: 4px solid #B76E79; padding: 15px; margin-bottom: 10px; border-radius: 8px;">
+              <h4 style="color:#B76E79; margin-bottom:5px;">${outfit.name}</h4>
+              <button class="btn-snap-styled black-btn" style="padding: 8px 12px; font-size: 0.8rem;" onclick="loadOutfit(${outfit.id})">Load</button>
             </div>
           `).join('');
         }
@@ -967,109 +931,28 @@
       showMessage('Outfit loaded!', 'success');
     }
 
-    // Initialize
-    // loadPresets();
+    // Initialize UI
     renderClothingItems('tops');
-    createAvatar();
 
-    let avatarRotation = 0;
-
-    // Rotate avatar
-    function rotateAvatar(direction) {
-      avatarRotation = direction === 'left' ? avatarRotation - 15 : avatarRotation + 15;
-      const avatar = document.getElementById('avatarPreview');
-      avatar.style.transform = `rotateY(${avatarRotation}deg)`;
-    }
-
-    // Download avatar
-    function downloadAvatar() {
-      const avatar = document.getElementById('avatarPreview');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      canvas.width = 400;
-      canvas.height = 500;
-
-      // Create gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#B76E79');
-      gradient.addColorStop(1, '#CD7F32');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Get outfit info
-      let outfitText = 'My Dressify Avatar\n\n';
-      if (currentOutfit.tops) {
-        const top = clothingDatabase.tops.find(t => t.id === currentOutfit.tops);
-        outfitText += top ? `Top: ${top.name}\n` : '';
-      }
-      if (currentOutfit.bottoms) {
-        const bottom = clothingDatabase.bottoms.find(b => b.id === currentOutfit.bottoms);
-        outfitText += bottom ? `Bottom: ${bottom.name}\n` : '';
-      }
-      if (currentOutfit.shoes) {
-        const shoe = clothingDatabase.shoes.find(s => s.id === currentOutfit.shoes);
-        outfitText += shoe ? `Shoes: ${shoe.name}\n` : '';
-      }
-
-      // Draw text
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 28px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('Dressify AI Avatar', canvas.width / 2, 80);
-
-      ctx.font = '16px Arial';
-      ctx.fillText(document.getElementById('avatarName').textContent, canvas.width / 2, 130);
-
-      ctx.font = '14px Arial';
-      const lines = outfitText.split('\n').filter(l => l.trim());
-      lines.forEach((line, i) => {
-        ctx.fillText(line, canvas.width / 2, 200 + (i * 30));
-      });
-
-      // Download
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `avatar-${Date.now()}.png`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showMessage('Avatar downloaded successfully!', 'success');
-      });
-    }
-
-    // document.getElementById('analyzeBtn').addEventListener('click', () => {
-    //   avatarImageInput.click();
-    // });
-
-    // snapchat integration
     window.addEventListener('DOMContentLoaded', () => {
+      // Check query params specifically if passing manual mock data (optional fallback)
       const params = new URLSearchParams(window.location.search);
       const snapName = params.get('name');
       const snapBitmoji = params.get('bitmoji');
-      const snapId = params.get('externalId');
 
       if (snapBitmoji) {
-        // 1. Update the Image
         const img = document.getElementById('userBitmoji');
-        const icon = document.getElementById('placeholderIcon');
         img.src = snapBitmoji;
         img.style.display = 'block';
-        if (icon) icon.style.display = 'none';
-
-        // 2. Update the Text
-        document.getElementById('avatarName').textContent = snapName;
-        document.getElementById('externalIdDisplay').textContent = `ID: ${snapId}`;
-
-        // 3. Update the Input Field so it can be saved with the form
+        document.getElementById('displayNameArea').textContent = snapName;
         document.getElementById('avatarNameInput').value = snapName;
-
-        console.log("Snapchat Avatar Integrated!");
       }
     });
+
+    function logoutAndSwitch() {
+      // Directs to Flask Logout Route
+      window.location.href = "http://127.0.0.1:8000/api/avatar/logout";
+    }
   </script>
   <script src="js/navbar-init.js"></script>
 
@@ -1080,8 +963,7 @@
           <a href="index.html">Dressify AI</a>
         </div>
         <p>
-          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by
-          cutting-edge AI.
+          Elevating fashion through artificial intelligence. Your personal stylist in your pocket, powered by cutting-edge AI.
         </p>
         <ul class="footer__socials">
           <li><a href="#"><ion-icon name="logo-facebook"></ion-icon></a></li>
@@ -1112,10 +994,8 @@
         <h4>Join Us</h4>
         <p>Subscribe to get the latest fashion trends and AI style tips delivered to your inbox.</p>
         <form style="display: flex; gap: 10px; margin-top: 10px;">
-          <input type="email" placeholder="Your email"
-            style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
-          <button type="submit" class="btn"
-            style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
+          <input type="email" placeholder="Your email" style="padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: white; flex: 1;">
+          <button type="submit" class="btn" style="padding: 10px 20px; border-radius: 20px; background: var(--primary); color: white; border: none; cursor: pointer; font-size: 0.9rem;">Join</button>
         </form>
       </div>
     </div>

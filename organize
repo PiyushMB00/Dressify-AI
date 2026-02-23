@@ -1,0 +1,24 @@
+TestDressify/
+│
+├── app.py                      # Main entry point (the merged app.py)
+├── extensions.py               # Database and Bcrypt initialization
+├── .env                        # Your SECRET_KEY, CLIENT_ID, and DATABASE_URL
+├── flask_session/              # Created automatically (stores Snap OAuth sessions)
+│
+├── routes/                     # Blueprint folders
+│   ├── auth_routes.py
+│   ├── avatar_routes.py        # ⬅️ Snap OAuth routes go here
+│   ├── ai_routes.py
+│   └── product_routes.py
+│
+├── static/                     # CSS, JS, and Images
+│   ├── css/
+│   │   └── indexstyle.css      # Your main stylesheet
+│   └── js/
+│       └── navbar-init.js
+│
+├── templates/                  # ⬅️ ALL HTML files must be here
+│   ├── index.html
+│   └── avatar-customizer.html  # Your main customization page
+│
+└── uploads/                    # Stores user-uploaded style references
