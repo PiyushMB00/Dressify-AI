@@ -10,6 +10,7 @@ from urllib.parse import urlencode, quote
 import hashlib, base64
 from flask import url_for, render_template
 import urllib.parse
+from extensions import db 
 
 # If you use db from extensions, you can uncomment this line:
 # from extensions import db
@@ -164,25 +165,63 @@ def logout():
 # ============================================================
 # OUTFIT SAVING AND LOADING ROUTES
 # ============================================================
+# Make sure to import your db instance!
+
+# 1. Create the Database Model
+class Outfit(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(100), nullable=False) # e.g., Snapchat Display Name
+    name = db.Column(db.String(100), nullable=False)
+    tops = db.Column(db.String(50), nullable=True)
+    bottoms = db.Column(db.String(50), nullable=True)
+    shoes = db.Column(db.String(50), nullable=True)
+# (Run `db.create_all()` once in your app context to create this table)
 
 @avatar_bp.route('/<user_id>/save-outfit', methods=['POST', 'OPTIONS'])
 def save_outfit(user_id):
-    # Handle the CORS preflight check specifically just in case
     if request.method == 'OPTIONS':
         return jsonify({}), 200
         
     data = request.get_json()
-    print(f"✅ Saving outfit for {user_id}: {data}")
-    
-    # TODO: Later, you can add your database saving logic here
-    
-    return jsonify({"message": "Outfit saved successfully!"}), 200
+    outfit_name = data.get('outfitName', 'My Outfit')
+    outfit_items = data.get('outfit', {})
+
+    try:
+        # Create a new Outfit record
+        new_outfit = Outfit(
+            user_id=user_id,
+            name=outfit_name,
+            tops=outfit_items.get('tops'),
+            bottoms=outfit_items.get('bottoms'),
+            shoes=outfit_items.get('shoes')
+        )
+        db.session.add(new_outfit)
+        db.session.commit()
+        
+        return jsonify({"message": "Outfit saved successfully!"}), 200
+    except Exception as e:
+        print("Error saving outfit:", e)
+        return jsonify({"error": "Failed to save outfit"}), 500
 
 @avatar_bp.route('/<user_id>/outfits', methods=['GET'])
 def load_outfits(user_id):
-    # Mocking saved outfits to send back to the frontend
-    mock_outfits = [
-        {"id": 1, "name": "My Favorite Look", "outfit": {"tops": "t1", "bottoms": "b1", "shoes": "s1"}},
-        {"id": 2, "name": "Casual Sunday", "outfit": {"tops": "t2", "bottoms": "b4", "shoes": "s4"}}
-    ]
-    return jsonify({"outfits": mock_outfits}), 200
+    try:
+        # Query the database for this specific user's outfits
+        saved_outfits = Outfit.query.filter_by(user_id=user_id).all()
+        
+        outfits_data = []
+        for outfit in saved_outfits:
+            outfits_data.append({
+                "id": outfit.id,
+                "name": outfit.name,
+                "outfit": {
+                    "tops": outfit.tops,
+                    "bottoms": outfit.bottoms,
+                    "shoes": outfit.shoes
+                }
+            })
+            
+        return jsonify({"outfits": outfits_data}), 200
+    except Exception as e:
+        print("Error loading outfits:", e)
+        return jsonify({"error": "Failed to load outfits"}), 500

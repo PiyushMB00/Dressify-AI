@@ -130,6 +130,13 @@ app.register_blueprint(ai_bp, url_prefix='/api/ai-hub')
 app.register_blueprint(avatar_bp, url_prefix='/api/avatar')
 
 # -------------------------------
+# Database Initialization
+# -------------------------------
+with app.app_context():
+    db.create_all()
+    print("Database tables created successfully!")
+
+# -------------------------------
 # Routes
 # -------------------------------
 @app.route('/')
