@@ -2,6 +2,8 @@ flask
 flask-cors
 flask-sqlalchemy
 flask-bcrypt
+flask-session
+flask-talisman
 python-dotenv
 pillow
 werkzeug
